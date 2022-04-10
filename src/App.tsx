@@ -1,26 +1,72 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ThemeProvider } from "@mui/material/styles";
+import { Container, CssBaseline, Stack, Typography } from "@mui/material";
+import { Background } from "@app/Background";
+import { Submission } from "@app/Submission";
+import { ScrollToTop } from "@app/ScrollToTop";
+import { MUITheme } from "@app/theme";
+import { Footer } from "@app/Footer";
 
-function App() {
+function Home() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Stack>
+      <ScrollToTop/>
+      <Background color={"background.default"}>
+        <Stack width={"100%"} height={"fit-content"} bgcolor={"primary.main"}>
+          <Container>
+            <Typography pt={16} pb={6} variant={"h3"} fontWeight={800}>
+              aaa
+            </Typography>
+          </Container>
+        </Stack>
+        <Container>
+          <Stack pt={4} pb={4} spacing={2}>
+
+          </Stack>
+        </Container>
+      </Background>
+      <Footer/>
+    </Stack>
+  )
 }
 
-export default App;
+function Company() {
+  return (
+    <Stack>
+      <ScrollToTop/>
+      <Background color={"background.default"}>
+        <Stack width={"100%"} height={"fit-content"} bgcolor={"primary.main"}>
+          <Container>
+            <Typography pt={16} pb={6} variant={"h3"} fontWeight={800}>
+              Google
+            </Typography>
+          </Container>
+        </Stack>
+        <Container>
+          <Stack pt={4} pb={4} spacing={2}>
+
+          </Stack>
+        </Container>
+      </Background>
+      <Footer/>
+    </Stack>
+  )
+}
+
+export function App() {
+  return (
+    <ThemeProvider theme={MUITheme}>
+      <BrowserRouter>
+        <CssBaseline enableColorScheme/>
+        <Routes>
+          <Route path="/" element={<Home/>}/>
+          <Route path="/submit" element={<Submission/>}/>
+          <Route path="/company" element={<Company/>}>
+            <Route path=":companyId" element={<Company/>}/>
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
+  );
+}
