@@ -16,7 +16,7 @@ const getSuggestions = (queryRaw: string) => {
 
 export function CompanySelect({value, onChange}: {
   value?: string;
-  onChange: (text: string) => void;
+  onChange: (name: string, domain?: string) => void;
 }) {
   const [query, setQuery] = useState("a");
   const [companies, setCompanies] = useState<Suggestion[]>([]);
@@ -35,9 +35,18 @@ export function CompanySelect({value, onChange}: {
       onInputChange={
         (e, value) => {
           setQuery(value);
-          onChange(value);
+          onChange(value, undefined);
         }
       }
+      onChange={(
+        event,
+        newValue,
+      ) => {
+        if (!newValue || typeof newValue === "string") {
+          return;
+        }
+        onChange(newValue.name, newValue.domain);
+      }}
       inputValue={value}
       getOptionLabel={(option) => option.name}
       renderOption={(props, option) => (
