@@ -150,29 +150,32 @@ type Field = {
   helper?: string;
 }
 
-type FormRequired = {
-  company?: string;
-  companyDomain?: string;
-  jobTitle?: string;
-  stage?: string;
-  compensation?: string;
-  date?: string;
+const useStringState = () => useSimpleState<string>("");
+type StringState = ReturnType<typeof useStringState>
 
-  gender?: string;
-  sexualOrientation?: string;
-  racialOrigin?: string;
-  visaStatus?: string;
-  nationality?: string;
-  disability?: string;
-  veteranStatus?: string;
-  criminalBackground?: string;
-  identifyAsIndigenousPeople?: string;
-  marriageStatus?: string;
+interface FormRequired {
+  company: StringState;
+  companyDomain: StringState;
+  jobTitle: StringState;
+  stage: StringState;
+  compensation: StringState;
+  date: StringState;
 
-  education?: string;
-  graduationYear?: string;
-  yearsOfExperience?: number;
-  gpa?: number;
+  gender: StringState;
+  sexualOrientation: StringState;
+  racialOrigin: StringState;
+  visaStatus: StringState;
+  nationality: StringState;
+  disability: StringState;
+  veteranStatus: StringState;
+  criminalBackground: StringState;
+  identifyAsIndigenousPeople: StringState;
+  marriageStatus: StringState;
+
+  education: StringState;
+  graduationYear: StringState;
+  yearsOfExperience: StringState;
+  gpa: StringState;
 }
 
 interface Form extends FormRequired {
@@ -199,7 +202,30 @@ export const Submission = observer(() => {
     setActiveStep(0);
   };
 
-  const [form, setForm] = useState<Form>({});
+  const form: Form = {
+    company: useStringState(),
+    companyDomain: useStringState(),
+    jobTitle: useStringState(),
+    stage: useStringState(),
+    compensation: useStringState(),
+    date: useStringState(),
+
+    gender: useStringState(),
+    sexualOrientation: useStringState(),
+    racialOrigin: useStringState(),
+    visaStatus: useStringState(),
+    nationality: useStringState(),
+    disability: useStringState(),
+    veteranStatus: useStringState(),
+    criminalBackground: useStringState(),
+    identifyAsIndigenousPeople: useStringState(),
+    marriageStatus: useStringState(),
+
+    education: useStringState(),
+    graduationYear: useStringState(),
+    yearsOfExperience: useStringState(),
+    gpa: useStringState(),
+  };
   const sending = useSimpleState(false);
   const sendError = useSimpleState<string | null>(null);
 
@@ -213,10 +239,10 @@ export const Submission = observer(() => {
     post<SubmitApplicationStatus, string>(
       `${URL_BASE}/submit`,
       buildProto<SubmitApplicationStatus>({
-        companyName: form.company,
+        companyName: form.company.value,
         // companyDomain: form.companyDomain,
         //stage: form.stage,
-        jobTitle: form.company,
+        jobTitle: form.company.value,
         // companyName: form.company,
         // companyName: form.company,
         // companyName: form.company,
@@ -239,7 +265,7 @@ export const Submission = observer(() => {
     })
   };
 
-  const setField = (key: string, value: any) => setForm({ ...form, [key]: value });
+  const setField = (key: string, value: any) => form[key].set(value);
 
   const render = (field: Field) => (
     <Stack direction={"row"} spacing={1} alignItems={"center"}>
@@ -250,7 +276,7 @@ export const Submission = observer(() => {
             required={field.required}
             labelId={`${field.key}-label`}
             id={field.key}
-            value={form[field.key]}
+            value={form[field.key].value}
             label={field.label}
             onChange={(e) => {
               setField(field.key, e.target.value)
@@ -265,7 +291,7 @@ export const Submission = observer(() => {
         <StyledTextField
           required={field.required}
           label={field.label}
-          value={form[field.key]}
+          value={form[field.key].value}
           onChange={(e) => {
             setField(field.key, e.target.value)
           }}
@@ -281,6 +307,39 @@ export const Submission = observer(() => {
     </Stack>
   );
 
+  const sections = [
+    {
+      label: 'Job Information',
+      content: (
+        <Stack sx={{ marginY: 2 }} spacing={2}>
+          <CompanySelect
+            value={form["company"].value}
+            onChange={(name, domain) => {
+              setField("company", name)
+              setField("companyDomain", domain)
+            }} />
+          {jobInfoFields.map(render)}
+        </Stack>
+      ),
+    },
+    {
+      label: 'Identity',
+      content: (
+        <Stack sx={{ marginY: 2 }} spacing={2}>
+          {aboutFields.map(render)}
+        </Stack>
+      ),
+    },
+    {
+      label: 'Education',
+      content: (
+        <Stack sx={{ marginY: 2 }} spacing={2}>
+          {educationFields.map(render)}
+        </Stack>
+      ),
+    },
+  ]
+
   return (
     <Stack>
       <ScrollToTop />
@@ -295,38 +354,7 @@ export const Submission = observer(() => {
         <Container>
           <Stack pt={4} pb={4} spacing={2} component={"form"} onSubmit={submitForm}>
             <Stepper activeStep={activeStep} orientation="vertical">
-              {[
-                {
-                  label: 'Job Information',
-                  content: (
-                    <Stack sx={{ marginY: 2 }} spacing={2}>
-                      <CompanySelect
-                        value={form["company"]}
-                        onChange={(name, domain) => {
-                          setField("company", name)
-                          setField("companyDomain", domain)
-                        }} />
-                      {jobInfoFields.map(render)}
-                    </Stack>
-                  ),
-                },
-                {
-                  label: 'Identity',
-                  content: (
-                    <Stack sx={{ marginY: 2 }} spacing={2}>
-                      {aboutFields.map(render)}
-                    </Stack>
-                  ),
-                },
-                {
-                  label: 'Education',
-                  content: (
-                    <Stack sx={{ marginY: 2 }} spacing={2}>
-                      {educationFields.map(render)}
-                    </Stack>
-                  ),
-                },
-              ].map((step, index) => (
+              {sections.map((step, index) => (
                 <Step key={step.label}>
                   <StepLabel
                     optional={
@@ -341,7 +369,7 @@ export const Submission = observer(() => {
                     <>{step.content}</>
                     <Box sx={{ mb: 2 }}>
                       <div>
-                        {index === 2 ? (
+                        {index === sections.length - 1 ? (
                           <Button
                             variant="contained"
                             type="submit"
