@@ -1,6 +1,7 @@
 import {
     Box,
     Button,
+    CircularProgress,
     Container,
     FormControl,
     IconButton,
@@ -16,13 +17,14 @@ import {
     Tooltip,
     Typography
 } from "@mui/material";
+import styled from "styled-components";
 import {ScrollToTop} from "@app/ScrollToTop";
 import {Background} from "@app/Background";
 import {Footer} from "@app/Footer";
-import React, {useEffect, useState} from "react";
+import React, {FormEvent, useEffect, useState} from "react";
 import {CompanySelect} from "@app/CompanySelect";
+import {CountrySelect} from "@app/CountrySelect";
 import {Help} from '@mui/icons-material';
-import styled from "styled-components";
 import {
     BooleanAnswer,
     EducationLevel,
@@ -31,10 +33,16 @@ import {
     RacialOrigin,
     SexualOrientation,
     Stage,
+    SubmitApplicationStatus,
     VisaStatus
 } from "@app/proto/api";
 import {capitalize} from "@app/helpers";
-import {CountrySelect} from "@app/CountrySelect";
+import {useSimpleState} from "@app/useSimpleState";
+import post from "@app/post";
+import {URL_BASE} from "@app/api";
+import {buildProto} from "@app/buildProto";
+import {Snack} from "@app/Snack";
+import {observer} from "mobx-react";
 
 const keys = (raw: Object) => Object
     .keys(raw)
@@ -233,7 +241,7 @@ const getSections = (
             ),
         },
         {
-            label: 'About You',
+            label: 'Identity',
             content: (
                 <Stack sx={{marginY: 2}} spacing={2}>
                     <CountrySelect value={form["nationality"]} onChange={text => {
@@ -250,11 +258,11 @@ const getSections = (
                     {educationFields.map(render)}
                 </Stack>
             ),
-        },
+        }
     ]
 };
 
-export function Submission() {
+export const Submission = observer(() => {
     const [activeStep, setActiveStep] = React.useState(0);
 
     const handleNext = () => {
@@ -273,9 +281,48 @@ export function Submission() {
 
     const [sections, setSections] = useState<Section[]>([]);
 
+    const sending = useSimpleState(false);
+    const sendError = useSimpleState<string | null>(null);
+
     useEffect(() => {
         setSections(getSections(form, (key, value) => setForm({...form, [key]: value})))
     }, [form]);
+
+    const submitForm = (e: FormEvent) => {
+        e.preventDefault();
+        if (sending.value) {
+            return;
+        }
+        sending.set(true);
+
+        post<SubmitApplicationStatus, string>(
+            `${URL_BASE}/submit`,
+            buildProto<SubmitApplicationStatus>({
+                companyName: form.company,
+                //stage: form.stage,
+                jobTitle: form.company,
+                // companyName: form.company,
+                // companyName: form.company,
+                // companyName: form.company,
+                // companyName: form.company,
+                // companyName: form.company,
+                // companyName: form.company,
+            }),
+            SubmitApplicationStatus,
+            undefined,
+        ).then((response) => {
+            sending.set(false);
+            if (response === "OK") {
+                // jump
+                return
+            } else {
+                sendError.set("Internal server error.");
+            }
+        }).catch(e => {
+            sending.set(false);
+            sendError.set(`Network error: ${e.message}`);
+        })
+    };
 
     return (
         <Stack>
@@ -289,7 +336,7 @@ export function Submission() {
                     </Container>
                 </Stack>
                 <Container>
-                    <Stack pt={4} pb={4} spacing={2}>
+                    <Stack pt={4} pb={4} spacing={2} component={"form"} onSubmit={submitForm}>
                         <Stepper activeStep={activeStep} orientation="vertical">
                             {sections.map((step, index) => (
                                 <Step key={step.label}>
@@ -306,13 +353,34 @@ export function Submission() {
                                         <>{step.content}</>
                                         <Box sx={{mb: 2}}>
                                             <div>
-                                                <Button
-                                                    variant="contained"
-                                                    onClick={handleNext}
-                                                    sx={{mt: 1, mr: 1}}
-                                                >
-                                                    {index === sections.length - 1 ? 'Finish' : 'Continue'}
-                                                </Button>
+                                                {index === sections.length - 1 ? (
+                                                    <Button
+                                                        variant="contained"
+                                                        type="submit"
+                                                        sx={{mt: 1, mr: 1}}
+                                                        endIcon={
+                                                            sending.value ? (
+                                                                <CircularProgress
+                                                                    sx={{
+                                                                        color: "primary.contrastText",
+                                                                        width: "20px !important",
+                                                                        height: "20px !important"
+                                                                    }}
+                                                                />
+                                                            ) : null
+                                                        }
+                                                    >
+                                                        Finish
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        variant="contained"
+                                                        onClick={handleNext}
+                                                        sx={{mt: 1, mr: 1}}
+                                                    >
+                                                        Continue
+                                                    </Button>
+                                                )}
                                                 <Button
                                                     disabled={index === 0}
                                                     onClick={handleBack}
@@ -330,9 +398,15 @@ export function Submission() {
                 </Container>
             </Background>
             <Footer/>
+            <Snack
+                open={!!sendError.value}
+                message={sendError.value}
+                severity={"error"}
+                onClose={() => sendError.set(null)}
+            />
         </Stack>
     )
-}
+})
 
 const StyledTextField = styled(TextField)`
   width: 300px;
