@@ -123,82 +123,6 @@ type Section = {
   content: JSX.Element;
 }
 
-const getSections = (
-  form: Form,
-  setField: (key: keyof FormRequired, value: any) => void,
-): Section[] => {
-  const render = (field: Field) => (
-    <Stack direction={"row"} spacing={1} alignItems={"center"}>
-      {field.options ? (
-        <FormControl>
-          <InputLabel id={`${field.key}-label`}>{field.label}</InputLabel>
-          <StyledSelect
-            required={field.required}
-            labelId={`${field.key}-label`}
-            id={field.key}
-            label={field.label}
-            value={form[field.key]}
-            onChange={(e) => {
-              setField(field.key, e.target.value)
-            }}
-          >
-            {field.options.map((option, index) => (
-              <MenuItem value={index}>{option}</MenuItem>
-            ))}
-          </StyledSelect>
-        </FormControl>
-      ) : (
-        <StyledTextField
-          required={field.required}
-          label={field.label}
-          value={form[field.key]}
-          onChange={(e) => {
-            setField(field.key, e.target.value)
-          }}
-        />
-      )}
-      {field.helper ? (
-        <Tooltip title={field.helper}>
-          <StyledIconButton>
-            <Help/>
-          </StyledIconButton>
-        </Tooltip>
-      ) : null}
-    </Stack>
-
-  );
-
-  return [
-    {
-      label: 'Job Information',
-      content: (
-        <Stack sx={{marginY: 2}} spacing={2}>
-          <CompanySelect value={form["company"]} onChange={text => {
-            setField("company", text)
-          }}/>
-          {jobInfoFields.map(render)}
-        </Stack>
-      ),
-    },
-    {
-      label: 'Identity',
-      content: (
-        <Stack sx={{marginY: 2}} spacing={2}>
-          {aboutFields.map(render)}
-        </Stack>
-      ),
-    },
-    {
-      label: 'Education',
-      content: (
-        <Stack sx={{marginY: 2}} spacing={2}>
-          {educationFields.map(render)}
-        </Stack>
-      ),
-    },
-  ]
-};
-
 export const Submission = observer(() => {
   const [activeStep, setActiveStep] = React.useState(0);
 
@@ -215,15 +139,8 @@ export const Submission = observer(() => {
   };
 
   const [form, setForm] = useState<Form>({});
-
-  const [sections, setSections] = useState<Section[]>([]);
-
   const sending = useSimpleState(false);
   const sendError = useSimpleState<string | null>(null);
-
-  useEffect(() => {
-    setSections(getSections(form, (key, value) => setForm({...form, [key]: value})))
-  }, [form]);
 
   const submitForm = (e: FormEvent) => {
     e.preventDefault();
@@ -261,6 +178,48 @@ export const Submission = observer(() => {
     })
   };
 
+  const setField = (key: string, value: any) => setForm({...form, [key]: value});
+
+  const render = (field: Field) => (
+    <Stack direction={"row"} spacing={1} alignItems={"center"}>
+      {field.options ? (
+        <FormControl>
+          <InputLabel id={`${field.key}-label`}>{field.label}</InputLabel>
+          <StyledSelect
+            required={field.required}
+            labelId={`${field.key}-label`}
+            id={field.key}
+            value={form[field.key]}
+            label={field.label}
+            onChange={(e) => {
+              setField(field.key, e.target.value)
+            }}
+          >
+            {field.options.map((option, index) => (
+              <MenuItem value={index}>{option}</MenuItem>
+            ))}
+          </StyledSelect>
+        </FormControl>
+      ) : (
+        <StyledTextField
+          required={field.required}
+          label={field.label}
+          value={form[field.key]}
+          onChange={(e) => {
+            setField(field.key, e.target.value)
+          }}
+        />
+      )}
+      {field.helper ? (
+        <Tooltip title={field.helper}>
+          <StyledIconButton>
+            <Help/>
+          </StyledIconButton>
+        </Tooltip>
+      ) : null}
+    </Stack>
+  );
+
   return (
     <Stack>
       <ScrollToTop/>
@@ -275,7 +234,37 @@ export const Submission = observer(() => {
         <Container>
           <Stack pt={4} pb={4} spacing={2} component={"form"} onSubmit={submitForm}>
             <Stepper activeStep={activeStep} orientation="vertical">
-              {sections.map((step, index) => (
+              {[
+                {
+                  label: 'Job Information',
+                  content: (
+                    <Stack sx={{marginY: 2}} spacing={2}>
+                      <CompanySelect
+                        value={form["company"]}
+                        onChange={text => {
+                        setField("company", text)
+                      }}/>
+                      {jobInfoFields.map(render)}
+                    </Stack>
+                  ),
+                },
+                {
+                  label: 'Identity',
+                  content: (
+                    <Stack sx={{marginY: 2}} spacing={2}>
+                      {aboutFields.map(render)}
+                    </Stack>
+                  ),
+                },
+                {
+                  label: 'Education',
+                  content: (
+                    <Stack sx={{marginY: 2}} spacing={2}>
+                      {educationFields.map(render)}
+                    </Stack>
+                  ),
+                },
+              ].map((step, index) => (
                 <Step key={step.label}>
                   <StepLabel
                     optional={
@@ -290,7 +279,7 @@ export const Submission = observer(() => {
                     <>{step.content}</>
                     <Box sx={{mb: 2}}>
                       <div>
-                        {index === sections.length - 1 ? (
+                        {index === 2 ? (
                           <Button
                             variant="contained"
                             type="submit"
