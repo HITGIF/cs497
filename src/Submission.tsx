@@ -21,7 +21,7 @@ import styled from "styled-components";
 import { ScrollToTop } from "@app/ScrollToTop";
 import { Background } from "@app/Background";
 import { Footer } from "@app/Footer";
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { CompanySelect } from "@app/CompanySelect";
 import { CountrySelect } from "@app/CountrySelect";
 import { Help } from '@mui/icons-material';
@@ -29,12 +29,12 @@ import {
   BooleanAnswer,
   EducationLevel,
   Gender,
+  MarriageStatus,
   RacialOrigin,
   SexualOrientation,
   Stage,
   SubmitApplicationStatus,
-  VisaStatus,
-  MarriageStatus
+  VisaStatus
 } from "@app/proto/api";
 import { capitalize } from "@app/helpers";
 import { useSimpleState } from "@app/useSimpleState";
@@ -238,7 +238,7 @@ export const Submission = observer(() => {
     })
   };
 
-  const setField = (key: string, value: any) => setForm({ ...form, [key]: value });
+  const setField = (key: string, value: any) => setForm({...form, [key]: value});
 
   const render = (field: Field) => (
     <Stack direction={"row"} spacing={1} alignItems={"center"}>
@@ -273,7 +273,7 @@ export const Submission = observer(() => {
       {field.helper ? (
         <Tooltip title={field.helper}>
           <StyledIconButton>
-            <Help />
+            <Help/>
           </StyledIconButton>
         </Tooltip>
       ) : null}
@@ -282,7 +282,7 @@ export const Submission = observer(() => {
 
   return (
     <Stack>
-      <ScrollToTop />
+      <ScrollToTop/>
       <Background color={"background.default"}>
         <Stack width={"100%"} height={"fit-content"} bgcolor={"primary.main"}>
           <Container>
@@ -298,12 +298,12 @@ export const Submission = observer(() => {
                 {
                   label: 'Job Information',
                   content: (
-                    <Stack sx={{ marginY: 2 }} spacing={2}>
+                    <Stack sx={{marginY: 2}} spacing={2}>
                       <CompanySelect
                         value={form["company"]}
                         onChange={text => {
                           setField("company", text)
-                        }} />
+                        }}/>
                       {jobInfoFields.map(render)}
                     </Stack>
                   ),
@@ -311,7 +311,12 @@ export const Submission = observer(() => {
                 {
                   label: 'Identity',
                   content: (
-                    <Stack sx={{ marginY: 2 }} spacing={2}>
+                    <Stack sx={{marginY: 2}} spacing={2}>
+                      <CountrySelect
+                        value={form.country}
+                        onChange={text => {
+                          setField("country", text)
+                        }}/>
                       {aboutFields.map(render)}
                     </Stack>
                   ),
@@ -319,7 +324,7 @@ export const Submission = observer(() => {
                 {
                   label: 'Education',
                   content: (
-                    <Stack sx={{ marginY: 2 }} spacing={2}>
+                    <Stack sx={{marginY: 2}} spacing={2}>
                       {educationFields.map(render)}
                     </Stack>
                   ),
@@ -337,13 +342,13 @@ export const Submission = observer(() => {
                   </StepLabel>
                   <StepContent>
                     <>{step.content}</>
-                    <Box sx={{ mb: 2 }}>
+                    <Box sx={{mb: 2}}>
                       <div>
                         {index === 2 ? (
                           <Button
                             variant="contained"
                             type="submit"
-                            sx={{ mt: 1, mr: 1 }}
+                            sx={{mt: 1, mr: 1}}
                             endIcon={
                               sending.value ? (
                                 <CircularProgress
@@ -362,7 +367,7 @@ export const Submission = observer(() => {
                           <Button
                             variant="contained"
                             onClick={handleNext}
-                            sx={{ mt: 1, mr: 1 }}
+                            sx={{mt: 1, mr: 1}}
                           >
                             Continue
                           </Button>
@@ -370,7 +375,7 @@ export const Submission = observer(() => {
                         <Button
                           disabled={index === 0}
                           onClick={handleBack}
-                          sx={{ mt: 1, mr: 1 }}
+                          sx={{mt: 1, mr: 1}}
                         >
                           Back
                         </Button>
@@ -383,7 +388,7 @@ export const Submission = observer(() => {
           </Stack>
         </Container>
       </Background>
-      <Footer />
+      <Footer/>
       <Snack
         open={!!sendError.value}
         message={sendError.value}
