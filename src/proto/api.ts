@@ -411,7 +411,9 @@ export function booleanAnswerToJSON(object: BooleanAnswer): string {
 }
 
 export interface SubmitApplicationStatus {
+  /** next 22 */
   companyName: string;
+  companyDomain: string;
   stage: Stage;
   jobTitle: string;
   hourlyCompensation: number;
@@ -429,7 +431,6 @@ export interface SubmitApplicationStatus {
   educationLevel: EducationLevel;
   yearOfGraduation: string;
   yearsOfExperience: number;
-  coOpTerm: number;
   gpa: number;
 }
 
@@ -438,9 +439,15 @@ export interface CompanyStatsRequest {
   jobTitleFilter: string;
 }
 
+export interface Company {
+  name: string;
+  domain: string;
+}
+
 function createBaseSubmitApplicationStatus(): SubmitApplicationStatus {
   return {
     companyName: "",
+    companyDomain: "",
     stage: 0,
     jobTitle: "",
     hourlyCompensation: 0,
@@ -458,7 +465,6 @@ function createBaseSubmitApplicationStatus(): SubmitApplicationStatus {
     educationLevel: 0,
     yearOfGraduation: "",
     yearsOfExperience: 0,
-    coOpTerm: 0,
     gpa: 0,
   };
 }
@@ -470,6 +476,9 @@ export const SubmitApplicationStatus = {
   ): _m0.Writer {
     if (message.companyName !== "") {
       writer.uint32(10).string(message.companyName);
+    }
+    if (message.companyDomain !== "") {
+      writer.uint32(170).string(message.companyDomain);
     }
     if (message.stage !== 0) {
       writer.uint32(16).int32(message.stage);
@@ -522,9 +531,6 @@ export const SubmitApplicationStatus = {
     if (message.yearsOfExperience !== 0) {
       writer.uint32(144).int32(message.yearsOfExperience);
     }
-    if (message.coOpTerm !== 0) {
-      writer.uint32(152).int32(message.coOpTerm);
-    }
     if (message.gpa !== 0) {
       writer.uint32(161).double(message.gpa);
     }
@@ -543,6 +549,9 @@ export const SubmitApplicationStatus = {
       switch (tag >>> 3) {
         case 1:
           message.companyName = reader.string();
+          break;
+        case 21:
+          message.companyDomain = reader.string();
           break;
         case 2:
           message.stage = reader.int32() as any;
@@ -595,9 +604,6 @@ export const SubmitApplicationStatus = {
         case 18:
           message.yearsOfExperience = reader.int32();
           break;
-        case 19:
-          message.coOpTerm = reader.int32();
-          break;
         case 20:
           message.gpa = reader.double();
           break;
@@ -612,6 +618,9 @@ export const SubmitApplicationStatus = {
   fromJSON(object: any): SubmitApplicationStatus {
     return {
       companyName: isSet(object.companyName) ? String(object.companyName) : "",
+      companyDomain: isSet(object.companyDomain)
+        ? String(object.companyDomain)
+        : "",
       stage: isSet(object.stage) ? stageFromJSON(object.stage) : 0,
       jobTitle: isSet(object.jobTitle) ? String(object.jobTitle) : "",
       hourlyCompensation: isSet(object.hourlyCompensation)
@@ -655,7 +664,6 @@ export const SubmitApplicationStatus = {
       yearsOfExperience: isSet(object.yearsOfExperience)
         ? Number(object.yearsOfExperience)
         : 0,
-      coOpTerm: isSet(object.coOpTerm) ? Number(object.coOpTerm) : 0,
       gpa: isSet(object.gpa) ? Number(object.gpa) : 0,
     };
   },
@@ -664,6 +672,8 @@ export const SubmitApplicationStatus = {
     const obj: any = {};
     message.companyName !== undefined &&
       (obj.companyName = message.companyName);
+    message.companyDomain !== undefined &&
+      (obj.companyDomain = message.companyDomain);
     message.stage !== undefined && (obj.stage = stageToJSON(message.stage));
     message.jobTitle !== undefined && (obj.jobTitle = message.jobTitle);
     message.hourlyCompensation !== undefined &&
@@ -699,8 +709,6 @@ export const SubmitApplicationStatus = {
       (obj.yearOfGraduation = message.yearOfGraduation);
     message.yearsOfExperience !== undefined &&
       (obj.yearsOfExperience = Math.round(message.yearsOfExperience));
-    message.coOpTerm !== undefined &&
-      (obj.coOpTerm = Math.round(message.coOpTerm));
     message.gpa !== undefined && (obj.gpa = message.gpa);
     return obj;
   },
@@ -710,6 +718,7 @@ export const SubmitApplicationStatus = {
   ): SubmitApplicationStatus {
     const message = createBaseSubmitApplicationStatus();
     message.companyName = object.companyName ?? "";
+    message.companyDomain = object.companyDomain ?? "";
     message.stage = object.stage ?? 0;
     message.jobTitle = object.jobTitle ?? "";
     message.hourlyCompensation = object.hourlyCompensation ?? 0;
@@ -727,7 +736,6 @@ export const SubmitApplicationStatus = {
     message.educationLevel = object.educationLevel ?? 0;
     message.yearOfGraduation = object.yearOfGraduation ?? "";
     message.yearsOfExperience = object.yearsOfExperience ?? 0;
-    message.coOpTerm = object.coOpTerm ?? 0;
     message.gpa = object.gpa ?? 0;
     return message;
   },
@@ -802,6 +810,67 @@ export const CompanyStatsRequest = {
     message.interestedAttributes =
       object.interestedAttributes?.map((e) => e) || [];
     message.jobTitleFilter = object.jobTitleFilter ?? "";
+    return message;
+  },
+};
+
+function createBaseCompany(): Company {
+  return { name: "", domain: "" };
+}
+
+export const Company = {
+  encode(
+    message: Company,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    if (message.domain !== "") {
+      writer.uint32(18).string(message.domain);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Company {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCompany();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.name = reader.string();
+          break;
+        case 2:
+          message.domain = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Company {
+    return {
+      name: isSet(object.name) ? String(object.name) : "",
+      domain: isSet(object.domain) ? String(object.domain) : "",
+    };
+  },
+
+  toJSON(message: Company): unknown {
+    const obj: any = {};
+    message.name !== undefined && (obj.name = message.name);
+    message.domain !== undefined && (obj.domain = message.domain);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<Company>, I>>(object: I): Company {
+    const message = createBaseCompany();
+    message.name = object.name ?? "";
+    message.domain = object.domain ?? "";
     return message;
   },
 };
