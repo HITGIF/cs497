@@ -17,14 +17,25 @@ import {
   Tooltip,
   Typography
 } from "@mui/material";
+import styled from "styled-components";
 import { ScrollToTop } from "@app/ScrollToTop";
 import { Background } from "@app/Background";
 import { Footer } from "@app/Footer";
 import React, { FormEvent, useEffect, useState } from "react";
 import { CompanySelect } from "@app/CompanySelect";
+import { CountrySelect } from "@app/CountrySelect";
 import { Help } from '@mui/icons-material';
-import styled from "styled-components";
-import { EducationLevel, Gender, SexualOrientation, Stage, SubmitApplicationStatus } from "@app/proto/api";
+import {
+  BooleanAnswer,
+  EducationLevel,
+  Gender,
+  RacialOrigin,
+  SexualOrientation,
+  Stage,
+  SubmitApplicationStatus,
+  VisaStatus,
+  MarriageStatus
+} from "@app/proto/api";
 import { capitalize } from "@app/helpers";
 import { useSimpleState } from "@app/useSimpleState";
 import post from "@app/post";
@@ -46,10 +57,18 @@ const jobInfoFields: Field[] = [
     required: true,
   },
   {
+    key: "compensation",
+    label: "Compensation",
+  },
+  {
+    key: "date",
+    label: "Date of Application",
+  },
+  {
     key: "stage",
     label: "Stage",
     options: keys(Stage),
-    helper: "ksjaldfh",
+    helper: "Please select the last stage you have been through",
   },
 ]
 
@@ -64,6 +83,42 @@ const aboutFields: Field[] = [
     label: "Sexual Orientation",
     options: keys(SexualOrientation),
   },
+  {
+    key: "racialOrigin",
+    label: "Racial Origin",
+    options: keys(RacialOrigin),
+  },
+  {
+    key: "identifyAsIndigenousPeople",
+    label: "I identify as indigenous people",
+    options: keys(BooleanAnswer),
+  },
+  {
+    key: "visaStatus",
+    label: "Visa Status",
+    options: keys(VisaStatus),
+    helper: "Please select your visa status of the country where the job requires you to be present"
+  },
+  {
+    key: "disability",
+    label: "Disability",
+    options: keys(BooleanAnswer),
+  },
+  {
+    key: "veteranStatus",
+    label: "Veteran Status",
+    options: keys(BooleanAnswer),
+  },
+  {
+    key: "criminalBackground",
+    label: "Criminal Background",
+    options: keys(BooleanAnswer),
+  },
+  {
+    key: "marriageStatus",
+    label: "Marriage Status",
+    options: keys(MarriageStatus),
+  },
 ];
 
 const educationFields: Field[] = [
@@ -75,6 +130,10 @@ const educationFields: Field[] = [
   {
     key: "graduationYear",
     label: "Graduation Year",
+  },
+  {
+    key: "yearsOfExperience",
+    label: "Years of Experience",
   },
   {
     key: "gpa",
@@ -94,23 +153,24 @@ type Field = {
 type FormRequired = {
   company?: string;
   jobTitle?: string;
-  stage?: number;
-  compensation?: number;
+  stage?: string;
+  compensation?: string;
   date?: string;
 
-  gender?: number;
-  sexualOrientation?: number;
-  racialOrigin?: number;
-  visaStatus?: number;
-  nationality?: number;
-  disability?: number;
-  veteranStatus?: number;
-  criminalBackground?: number;
-  identifyAsIndigenousPeople?: number;
-  marriageStatus?: number;
+  gender?: string;
+  sexualOrientation?: string;
+  racialOrigin?: string;
+  visaStatus?: string;
+  nationality?: string;
+  disability?: string;
+  veteranStatus?: string;
+  criminalBackground?: string;
+  identifyAsIndigenousPeople?: string;
+  marriageStatus?: string;
 
-  education?: number;
+  education?: string;
   graduationYear?: string;
+  yearsOfExperience?: number;
   gpa?: number;
 }
 
@@ -153,7 +213,7 @@ export const Submission = observer(() => {
       `${URL_BASE}/submit`,
       buildProto<SubmitApplicationStatus>({
         companyName: form.company,
-        stage: form.stage,
+        //stage: form.stage,
         jobTitle: form.company,
         // companyName: form.company,
         // companyName: form.company,
@@ -178,7 +238,7 @@ export const Submission = observer(() => {
     })
   };
 
-  const setField = (key: string, value: any) => setForm({...form, [key]: value});
+  const setField = (key: string, value: any) => setForm({ ...form, [key]: value });
 
   const render = (field: Field) => (
     <Stack direction={"row"} spacing={1} alignItems={"center"}>
@@ -213,7 +273,7 @@ export const Submission = observer(() => {
       {field.helper ? (
         <Tooltip title={field.helper}>
           <StyledIconButton>
-            <Help/>
+            <Help />
           </StyledIconButton>
         </Tooltip>
       ) : null}
@@ -222,7 +282,7 @@ export const Submission = observer(() => {
 
   return (
     <Stack>
-      <ScrollToTop/>
+      <ScrollToTop />
       <Background color={"background.default"}>
         <Stack width={"100%"} height={"fit-content"} bgcolor={"primary.main"}>
           <Container>
@@ -238,12 +298,12 @@ export const Submission = observer(() => {
                 {
                   label: 'Job Information',
                   content: (
-                    <Stack sx={{marginY: 2}} spacing={2}>
+                    <Stack sx={{ marginY: 2 }} spacing={2}>
                       <CompanySelect
                         value={form["company"]}
                         onChange={text => {
-                        setField("company", text)
-                      }}/>
+                          setField("company", text)
+                        }} />
                       {jobInfoFields.map(render)}
                     </Stack>
                   ),
@@ -251,7 +311,7 @@ export const Submission = observer(() => {
                 {
                   label: 'Identity',
                   content: (
-                    <Stack sx={{marginY: 2}} spacing={2}>
+                    <Stack sx={{ marginY: 2 }} spacing={2}>
                       {aboutFields.map(render)}
                     </Stack>
                   ),
@@ -259,7 +319,7 @@ export const Submission = observer(() => {
                 {
                   label: 'Education',
                   content: (
-                    <Stack sx={{marginY: 2}} spacing={2}>
+                    <Stack sx={{ marginY: 2 }} spacing={2}>
                       {educationFields.map(render)}
                     </Stack>
                   ),
@@ -277,13 +337,13 @@ export const Submission = observer(() => {
                   </StepLabel>
                   <StepContent>
                     <>{step.content}</>
-                    <Box sx={{mb: 2}}>
+                    <Box sx={{ mb: 2 }}>
                       <div>
                         {index === 2 ? (
                           <Button
                             variant="contained"
                             type="submit"
-                            sx={{mt: 1, mr: 1}}
+                            sx={{ mt: 1, mr: 1 }}
                             endIcon={
                               sending.value ? (
                                 <CircularProgress
@@ -302,7 +362,7 @@ export const Submission = observer(() => {
                           <Button
                             variant="contained"
                             onClick={handleNext}
-                            sx={{mt: 1, mr: 1}}
+                            sx={{ mt: 1, mr: 1 }}
                           >
                             Continue
                           </Button>
@@ -310,7 +370,7 @@ export const Submission = observer(() => {
                         <Button
                           disabled={index === 0}
                           onClick={handleBack}
-                          sx={{mt: 1, mr: 1}}
+                          sx={{ mt: 1, mr: 1 }}
                         >
                           Back
                         </Button>
@@ -323,7 +383,7 @@ export const Submission = observer(() => {
           </Stack>
         </Container>
       </Background>
-      <Footer/>
+      <Footer />
       <Snack
         open={!!sendError.value}
         message={sendError.value}
