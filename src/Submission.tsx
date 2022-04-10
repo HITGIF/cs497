@@ -153,23 +153,23 @@ type Field = {
 type FormRequired = {
   company?: string;
   jobTitle?: string;
-  stage?: string;
-  compensation?: string;
-  date?: string;
+  stage?: number;
+  compensation?: number;
+  date?: number;
 
-  gender?: string;
-  sexualOrientation?: string;
-  racialOrigin?: string;
-  visaStatus?: string;
+  gender?: number;
+  sexualOrientation?: number;
+  racialOrigin?: number;
+  visaStatus?: number;
   nationality?: string;
-  disability?: string;
-  veteranStatus?: string;
-  criminalBackground?: string;
-  identifyAsIndigenousPeople?: string;
-  marriageStatus?: string;
+  disability?: number;
+  veteranStatus?: number;
+  criminalBackground?: number;
+  identifyAsIndigenousPeople?: number;
+  marriageStatus?: number;
 
-  education?: string;
-  graduationYear?: string;
+  education?: number;
+  graduationYear?: number;
   yearsOfExperience?: number;
   gpa?: number;
 }
@@ -213,14 +213,24 @@ export const Submission = observer(() => {
       `${URL_BASE}/submit`,
       buildProto<SubmitApplicationStatus>({
         companyName: form.company,
-        //stage: form.stage,
+        stage: form.stage,
         jobTitle: form.company,
-        // companyName: form.company,
-        // companyName: form.company,
-        // companyName: form.company,
-        // companyName: form.company,
-        // companyName: form.company,
-        // companyName: form.company,
+        hourlyCompensation: form.compensation,
+        dateOfDecision: form.date,
+        gender: form.gender,
+        sexualOrientation: form.sexualOrientation,
+        racialOrigin: form.racialOrigin,
+        visaStatus: form.visaStatus,
+        nationality: form.nationality,
+        disability: form.disability,
+        veteranStatus: form.veteranStatus,
+        criminalBackground: form.criminalBackground,
+        indigenous: form.indigenous,
+        marriageStatus: form.marriageStatus,
+        educationLevel: form.educationLevel,
+        yearOfGraduation: form.yearOfGraduation,
+        yearsOfExperience: form.yearsOfExperience,
+        gpa: form.gpa,
       }),
       SubmitApplicationStatus,
       undefined,
