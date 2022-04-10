@@ -3,7 +3,7 @@ import { ScrollToTop } from "@app/ScrollToTop";
 import { Background } from "@app/Background";
 import { Footer } from "@app/Footer";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 type Suggestion = {
   name?: string;
@@ -11,22 +11,26 @@ type Suggestion = {
   logo?: string;
 }
 
-const getSuggestions = (queryRaw: string) => {
-  const query = queryRaw !== "" ? queryRaw : "a";
-  return fetch(`https://autocomplete.clearbit.com/v1/companies/suggest?query=${query}`)
+const getCompany = (domain: string) => {
+  return fetch(`https://autocomplete.clearbit.com/v1/companies/suggest?query=${domain}`)
     .then(response => response.json())
     .then(data => data as Suggestion[])
 }
 
 export function Company() {
-  const {companyPath} = useParams();
+  const [searchParams] = useSearchParams();
+  const companyDomain = searchParams.get("domain");
+  const companyName = searchParams.get("name");
   const [company, setCompany] = useState<Suggestion>({});
+
   useEffect(() => {
     (async () => {
-      const data = await getSuggestions(companyPath!);
-      setCompany(data[0]);
+      if (companyDomain) {
+        const data = await getCompany(companyDomain);
+        setCompany(data[0]);
+      }
     })()
-  }, [companyPath])
+  }, [companyDomain])
 
   return (
     <Stack>
@@ -34,14 +38,14 @@ export function Company() {
       <Background color={"background.default"}>
         <Stack width={"100%"} height={"fit-content"} bgcolor={"primary.main"}>
           <Container>
-            <Stack direction={"row"}>
+            <Stack direction={"row"} spacing={4}>
               <Avatar
                 alt={company.name}
                 src={company.logo}
-                sx={{width: 152, height: 152}}
+                sx={{width: 90, height: 90, mt: 14, mb: 3}}
               />
               <Typography pt={16} pb={6} variant={"h3"} fontWeight={800}>
-                {company.name}
+                {company.name ?? companyName}
               </Typography>
             </Stack>
           </Container>
