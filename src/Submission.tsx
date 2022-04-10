@@ -152,6 +152,7 @@ type Field = {
 
 type FormRequired = {
   company?: string;
+  companyDomain?: string;
   jobTitle?: string;
   stage?: string;
   compensation?: string;
@@ -213,9 +214,9 @@ export const Submission = observer(() => {
       `${URL_BASE}/submit`,
       buildProto<SubmitApplicationStatus>({
         companyName: form.company,
+        // companyDomain: form.companyDomain,
         //stage: form.stage,
         jobTitle: form.company,
-        // companyName: form.company,
         // companyName: form.company,
         // companyName: form.company,
         // companyName: form.company,
@@ -301,8 +302,9 @@ export const Submission = observer(() => {
                     <Stack sx={{ marginY: 2 }} spacing={2}>
                       <CompanySelect
                         value={form["company"]}
-                        onChange={text => {
-                          setField("company", text)
+                        onChange={(name, domain) => {
+                          setField("company", name)
+                          setField("companyDomain", domain)
                         }} />
                       {jobInfoFields.map(render)}
                     </Stack>
