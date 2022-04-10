@@ -23,21 +23,25 @@ import React, { useEffect, useState } from "react";
 import { CompanySelect } from "@app/CompanySelect";
 import { Help } from '@mui/icons-material';
 import styled from "styled-components";
+import { EducationLevel, Gender, SexualOrientation, Stage } from "@app/proto/api";
+import { capitalize } from "@app/helpers";
+
+const keys = (raw: Object) => Object
+  .keys(raw)
+  .filter(value => isNaN(Number(value)))
+  .slice(0, -1)
+  .map(it => it.split("_").map(capitalize).join(" "))
 
 const jobInfoFields: Field[] = [
   {
     key: "jobTitle",
     label: "Job Title",
+    required: true,
   },
   {
     key: "stage",
     label: "Stage",
-    options: [
-      "Applied",
-      "Online Assessment",
-      "Interview",
-      "Offer",
-    ],
+    options: keys(Stage),
     helper: "ksjaldfh",
   },
 ]
@@ -46,43 +50,35 @@ const aboutFields: Field[] = [
   {
     key: "gender",
     label: "Gender",
-    options: [
-      "Male",
-      "Female",
-    ],
+    options: keys(Gender),
   },
   {
     key: "sexualOrientation",
     label: "Sexual Orientation",
-    options: [
-      "Bisexual",
-      "sasas",
-    ],
+    options: keys(SexualOrientation),
   },
 ];
 
 const educationFields: Field[] = [
   {
-    key: "gender",
-    label: "Gender",
-    options: [
-      "Male",
-      "Female",
-    ],
+    key: "education",
+    label: "Highest Education",
+    options: keys(EducationLevel),
   },
   {
-    key: "sexualOrientation",
-    label: "Sexual Orientation",
-    options: [
-      "Bisexual",
-      "sasas",
-    ],
+    key: "graduationYear",
+    label: "Graduation Year",
+  },
+  {
+    key: "gpa",
+    label: "GPA",
   },
 ];
 
 type Field = {
   key: keyof FormRequired;
   label: string;
+  required?: boolean;
   value?: any;
   options?: string[];
   helper?: string;
@@ -107,7 +103,6 @@ type FormRequired = {
   marriageStatus?: string;
 
   education?: string;
-  ongoing?: boolean;
   graduationYear?: string;
   gpa?: number;
 }
@@ -131,6 +126,7 @@ const getSections = (
         <FormControl>
           <InputLabel id={`${field.key}-label`}>{field.label}</InputLabel>
           <StyledSelect
+            required={field.required}
             labelId={`${field.key}-label`}
             id={field.key}
             label={field.label}
@@ -139,13 +135,14 @@ const getSections = (
               setField(field.key, e.target.value)
             }}
           >
-            {field.options.map(option => (
-              <MenuItem value={option}>{option}</MenuItem>
+            {field.options.map((option, index) => (
+              <MenuItem value={index}>{option}</MenuItem>
             ))}
           </StyledSelect>
         </FormControl>
       ) : (
         <StyledTextField
+          required={field.required}
           label={field.label}
           value={form[field.key]}
           onChange={(e) => {

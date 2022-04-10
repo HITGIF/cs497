@@ -55,6 +55,7 @@ export function CompanySelect({value, onChange}: {
       renderInput={(params) => (
         <TextField
           {...params}
+          required
           label="Company"
           inputProps={{
             ...params.inputProps,
