@@ -1,6 +1,7 @@
 import {
   Box,
-  Button, CircularProgress,
+  Button,
+  CircularProgress,
   Container,
   FormControl,
   IconButton,
@@ -21,7 +22,7 @@ import { Background } from "@app/Background";
 import { Footer } from "@app/Footer";
 import React, { FormEvent, useEffect, useState } from "react";
 import { CompanySelect } from "@app/CompanySelect";
-import { Help, Send } from '@mui/icons-material';
+import { Help } from '@mui/icons-material';
 import styled from "styled-components";
 import { EducationLevel, Gender, SexualOrientation, Stage, SubmitApplicationStatus } from "@app/proto/api";
 import { capitalize } from "@app/helpers";
@@ -212,12 +213,6 @@ export const Submission = observer(() => {
   const handleReset = () => {
     setActiveStep(0);
   };
-
-  // useEffect(() => {
-  //   if (activeStep >= 3) {
-  //     alert("asas")
-  //   }
-  // }, [activeStep]);
 
   const [form, setForm] = useState<Form>({});
 
