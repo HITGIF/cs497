@@ -5,35 +5,27 @@ import * as _m0 from "protobufjs/minimal";
 export const protobufPackage = "api";
 
 export enum Stage {
-  Applied = 0,
-  OnlineAssessment = 1,
-  Interview = 2,
-  Interview2 = 3,
-  Interview3 = 4,
-  Offer = 5,
+  APPLIED = 0,
+  ONLINE_ASSESSMENT = 1,
+  INTERVIEW = 2,
+  OFFER = 3,
   UNRECOGNIZED = -1,
 }
 
 export function stageFromJSON(object: any): Stage {
   switch (object) {
     case 0:
-    case "Applied":
-      return Stage.Applied;
+    case "APPLIED":
+      return Stage.APPLIED;
     case 1:
-    case "OnlineAssessment":
-      return Stage.OnlineAssessment;
+    case "ONLINE_ASSESSMENT":
+      return Stage.ONLINE_ASSESSMENT;
     case 2:
-    case "Interview":
-      return Stage.Interview;
+    case "INTERVIEW":
+      return Stage.INTERVIEW;
     case 3:
-    case "Interview2":
-      return Stage.Interview2;
-    case 4:
-    case "Interview3":
-      return Stage.Interview3;
-    case 5:
-    case "Offer":
-      return Stage.Offer;
+    case "OFFER":
+      return Stage.OFFER;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -43,18 +35,14 @@ export function stageFromJSON(object: any): Stage {
 
 export function stageToJSON(object: Stage): string {
   switch (object) {
-    case Stage.Applied:
-      return "Applied";
-    case Stage.OnlineAssessment:
-      return "OnlineAssessment";
-    case Stage.Interview:
-      return "Interview";
-    case Stage.Interview2:
-      return "Interview2";
-    case Stage.Interview3:
-      return "Interview3";
-    case Stage.Offer:
-      return "Offer";
+    case Stage.APPLIED:
+      return "APPLIED";
+    case Stage.ONLINE_ASSESSMENT:
+      return "ONLINE_ASSESSMENT";
+    case Stage.INTERVIEW:
+      return "INTERVIEW";
+    case Stage.OFFER:
+      return "OFFER";
     default:
       return "UNKNOWN";
   }
@@ -323,7 +311,7 @@ export function marriageStatusToJSON(object: MarriageStatus): string {
 }
 
 export enum EducationLevel {
-  NO_EDUCATION = 0,
+  BELOW_HIGH_SCHOOL = 0,
   HIGH_SCHOOL = 1,
   ASSOCIATES = 2,
   BACHELORS = 3,
@@ -336,8 +324,8 @@ export enum EducationLevel {
 export function educationLevelFromJSON(object: any): EducationLevel {
   switch (object) {
     case 0:
-    case "NO_EDUCATION":
-      return EducationLevel.NO_EDUCATION;
+    case "BELOW_HIGH_SCHOOL":
+      return EducationLevel.BELOW_HIGH_SCHOOL;
     case 1:
     case "HIGH_SCHOOL":
       return EducationLevel.HIGH_SCHOOL;
@@ -365,8 +353,8 @@ export function educationLevelFromJSON(object: any): EducationLevel {
 
 export function educationLevelToJSON(object: EducationLevel): string {
   switch (object) {
-    case EducationLevel.NO_EDUCATION:
-      return "NO_EDUCATION";
+    case EducationLevel.BELOW_HIGH_SCHOOL:
+      return "BELOW_HIGH_SCHOOL";
     case EducationLevel.HIGH_SCHOOL:
       return "HIGH_SCHOOL";
     case EducationLevel.ASSOCIATES:
@@ -384,6 +372,44 @@ export function educationLevelToJSON(object: EducationLevel): string {
   }
 }
 
+export enum BooleanAnswer {
+  YES = 0,
+  NO = 1,
+  PREFER_NOT_TO_ANSWER = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function booleanAnswerFromJSON(object: any): BooleanAnswer {
+  switch (object) {
+    case 0:
+    case "YES":
+      return BooleanAnswer.YES;
+    case 1:
+    case "NO":
+      return BooleanAnswer.NO;
+    case 2:
+    case "PREFER_NOT_TO_ANSWER":
+      return BooleanAnswer.PREFER_NOT_TO_ANSWER;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return BooleanAnswer.UNRECOGNIZED;
+  }
+}
+
+export function booleanAnswerToJSON(object: BooleanAnswer): string {
+  switch (object) {
+    case BooleanAnswer.YES:
+      return "YES";
+    case BooleanAnswer.NO:
+      return "NO";
+    case BooleanAnswer.PREFER_NOT_TO_ANSWER:
+      return "PREFER_NOT_TO_ANSWER";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 export interface SubmitApplicationStatus {
   companyName: string;
   stage: Stage;
@@ -395,13 +421,13 @@ export interface SubmitApplicationStatus {
   racialOrigin: RacialOrigin;
   visaStatus: VisaStatus;
   nationality: string;
-  disability: boolean;
-  veteranStatus: boolean;
-  criminalBackground: boolean;
-  indigenous: boolean;
+  disability: BooleanAnswer;
+  veteranStatus: BooleanAnswer;
+  criminalBackground: BooleanAnswer;
+  indigenous: BooleanAnswer;
   marriageStatus: MarriageStatus;
   educationLevel: EducationLevel;
-  graduated: boolean;
+  yearOfGraduation: string;
   yearsOfExperience: number;
   coOpTerm: number;
   gpa: number;
@@ -424,13 +450,13 @@ function createBaseSubmitApplicationStatus(): SubmitApplicationStatus {
     racialOrigin: 0,
     visaStatus: 0,
     nationality: "",
-    disability: false,
-    veteranStatus: false,
-    criminalBackground: false,
-    indigenous: false,
+    disability: 0,
+    veteranStatus: 0,
+    criminalBackground: 0,
+    indigenous: 0,
     marriageStatus: 0,
     educationLevel: 0,
-    graduated: false,
+    yearOfGraduation: "",
     yearsOfExperience: 0,
     coOpTerm: 0,
     gpa: 0,
@@ -472,17 +498,17 @@ export const SubmitApplicationStatus = {
     if (message.nationality !== "") {
       writer.uint32(82).string(message.nationality);
     }
-    if (message.disability === true) {
-      writer.uint32(88).bool(message.disability);
+    if (message.disability !== 0) {
+      writer.uint32(88).int32(message.disability);
     }
-    if (message.veteranStatus === true) {
-      writer.uint32(96).bool(message.veteranStatus);
+    if (message.veteranStatus !== 0) {
+      writer.uint32(96).int32(message.veteranStatus);
     }
-    if (message.criminalBackground === true) {
-      writer.uint32(104).bool(message.criminalBackground);
+    if (message.criminalBackground !== 0) {
+      writer.uint32(104).int32(message.criminalBackground);
     }
-    if (message.indigenous === true) {
-      writer.uint32(112).bool(message.indigenous);
+    if (message.indigenous !== 0) {
+      writer.uint32(112).int32(message.indigenous);
     }
     if (message.marriageStatus !== 0) {
       writer.uint32(120).int32(message.marriageStatus);
@@ -490,8 +516,8 @@ export const SubmitApplicationStatus = {
     if (message.educationLevel !== 0) {
       writer.uint32(128).int32(message.educationLevel);
     }
-    if (message.graduated === true) {
-      writer.uint32(136).bool(message.graduated);
+    if (message.yearOfGraduation !== "") {
+      writer.uint32(138).string(message.yearOfGraduation);
     }
     if (message.yearsOfExperience !== 0) {
       writer.uint32(144).int32(message.yearsOfExperience);
@@ -546,16 +572,16 @@ export const SubmitApplicationStatus = {
           message.nationality = reader.string();
           break;
         case 11:
-          message.disability = reader.bool();
+          message.disability = reader.int32() as any;
           break;
         case 12:
-          message.veteranStatus = reader.bool();
+          message.veteranStatus = reader.int32() as any;
           break;
         case 13:
-          message.criminalBackground = reader.bool();
+          message.criminalBackground = reader.int32() as any;
           break;
         case 14:
-          message.indigenous = reader.bool();
+          message.indigenous = reader.int32() as any;
           break;
         case 15:
           message.marriageStatus = reader.int32() as any;
@@ -564,7 +590,7 @@ export const SubmitApplicationStatus = {
           message.educationLevel = reader.int32() as any;
           break;
         case 17:
-          message.graduated = reader.bool();
+          message.yearOfGraduation = reader.string();
           break;
         case 18:
           message.yearsOfExperience = reader.int32();
@@ -605,21 +631,27 @@ export const SubmitApplicationStatus = {
         ? visaStatusFromJSON(object.visaStatus)
         : 0,
       nationality: isSet(object.nationality) ? String(object.nationality) : "",
-      disability: isSet(object.disability) ? Boolean(object.disability) : false,
+      disability: isSet(object.disability)
+        ? booleanAnswerFromJSON(object.disability)
+        : 0,
       veteranStatus: isSet(object.veteranStatus)
-        ? Boolean(object.veteranStatus)
-        : false,
+        ? booleanAnswerFromJSON(object.veteranStatus)
+        : 0,
       criminalBackground: isSet(object.criminalBackground)
-        ? Boolean(object.criminalBackground)
-        : false,
-      indigenous: isSet(object.indigenous) ? Boolean(object.indigenous) : false,
+        ? booleanAnswerFromJSON(object.criminalBackground)
+        : 0,
+      indigenous: isSet(object.indigenous)
+        ? booleanAnswerFromJSON(object.indigenous)
+        : 0,
       marriageStatus: isSet(object.marriageStatus)
         ? marriageStatusFromJSON(object.marriageStatus)
         : 0,
       educationLevel: isSet(object.educationLevel)
         ? educationLevelFromJSON(object.educationLevel)
         : 0,
-      graduated: isSet(object.graduated) ? Boolean(object.graduated) : false,
+      yearOfGraduation: isSet(object.yearOfGraduation)
+        ? String(object.yearOfGraduation)
+        : "",
       yearsOfExperience: isSet(object.yearsOfExperience)
         ? Number(object.yearsOfExperience)
         : 0,
@@ -649,17 +681,22 @@ export const SubmitApplicationStatus = {
       (obj.visaStatus = visaStatusToJSON(message.visaStatus));
     message.nationality !== undefined &&
       (obj.nationality = message.nationality);
-    message.disability !== undefined && (obj.disability = message.disability);
+    message.disability !== undefined &&
+      (obj.disability = booleanAnswerToJSON(message.disability));
     message.veteranStatus !== undefined &&
-      (obj.veteranStatus = message.veteranStatus);
+      (obj.veteranStatus = booleanAnswerToJSON(message.veteranStatus));
     message.criminalBackground !== undefined &&
-      (obj.criminalBackground = message.criminalBackground);
-    message.indigenous !== undefined && (obj.indigenous = message.indigenous);
+      (obj.criminalBackground = booleanAnswerToJSON(
+        message.criminalBackground
+      ));
+    message.indigenous !== undefined &&
+      (obj.indigenous = booleanAnswerToJSON(message.indigenous));
     message.marriageStatus !== undefined &&
       (obj.marriageStatus = marriageStatusToJSON(message.marriageStatus));
     message.educationLevel !== undefined &&
       (obj.educationLevel = educationLevelToJSON(message.educationLevel));
-    message.graduated !== undefined && (obj.graduated = message.graduated);
+    message.yearOfGraduation !== undefined &&
+      (obj.yearOfGraduation = message.yearOfGraduation);
     message.yearsOfExperience !== undefined &&
       (obj.yearsOfExperience = Math.round(message.yearsOfExperience));
     message.coOpTerm !== undefined &&
@@ -682,13 +719,13 @@ export const SubmitApplicationStatus = {
     message.racialOrigin = object.racialOrigin ?? 0;
     message.visaStatus = object.visaStatus ?? 0;
     message.nationality = object.nationality ?? "";
-    message.disability = object.disability ?? false;
-    message.veteranStatus = object.veteranStatus ?? false;
-    message.criminalBackground = object.criminalBackground ?? false;
-    message.indigenous = object.indigenous ?? false;
+    message.disability = object.disability ?? 0;
+    message.veteranStatus = object.veteranStatus ?? 0;
+    message.criminalBackground = object.criminalBackground ?? 0;
+    message.indigenous = object.indigenous ?? 0;
     message.marriageStatus = object.marriageStatus ?? 0;
     message.educationLevel = object.educationLevel ?? 0;
-    message.graduated = object.graduated ?? false;
+    message.yearOfGraduation = object.yearOfGraduation ?? "";
     message.yearsOfExperience = object.yearsOfExperience ?? 0;
     message.coOpTerm = object.coOpTerm ?? 0;
     message.gpa = object.gpa ?? 0;
