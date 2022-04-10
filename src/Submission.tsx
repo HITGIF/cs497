@@ -1,6 +1,6 @@
 import {
   Box,
-  Button,
+  Button, CircularProgress,
   Container,
   FormControl,
   IconButton,
@@ -19,12 +19,18 @@ import {
 import { ScrollToTop } from "@app/ScrollToTop";
 import { Background } from "@app/Background";
 import { Footer } from "@app/Footer";
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { CompanySelect } from "@app/CompanySelect";
-import { Help } from '@mui/icons-material';
+import { Help, Send } from '@mui/icons-material';
 import styled from "styled-components";
-import { EducationLevel, Gender, SexualOrientation, Stage } from "@app/proto/api";
+import { EducationLevel, Gender, SexualOrientation, Stage, SubmitApplicationStatus } from "@app/proto/api";
 import { capitalize } from "@app/helpers";
+import { useSimpleState } from "@app/useSimpleState";
+import post from "@app/post";
+import { URL_BASE } from "@app/api";
+import { buildProto } from "@app/buildProto";
+import { Snack } from "@app/Snack";
+import { observer } from "mobx-react";
 
 const keys = (raw: Object) => Object
   .keys(raw)
@@ -87,22 +93,22 @@ type Field = {
 type FormRequired = {
   company?: string;
   jobTitle?: string;
-  stage?: string;
-  compensation?: string;
+  stage?: number;
+  compensation?: number;
   date?: string;
 
-  gender?: string;
-  sexualOrientation?: string;
-  racialOrigin?: string;
-  visaStatus?: string;
-  nationality?: string;
-  disability?: string;
-  veteranStatus?: string;
-  criminalBackground?: string;
-  identifyAsIndigenousPeople?: string;
-  marriageStatus?: string;
+  gender?: number;
+  sexualOrientation?: number;
+  racialOrigin?: number;
+  visaStatus?: number;
+  nationality?: number;
+  disability?: number;
+  veteranStatus?: number;
+  criminalBackground?: number;
+  identifyAsIndigenousPeople?: number;
+  marriageStatus?: number;
 
-  education?: string;
+  education?: number;
   graduationYear?: string;
   gpa?: number;
 }
@@ -174,7 +180,7 @@ const getSections = (
       ),
     },
     {
-      label: 'About You',
+      label: 'Identity',
       content: (
         <Stack sx={{marginY: 2}} spacing={2}>
           {aboutFields.map(render)}
@@ -192,7 +198,7 @@ const getSections = (
   ]
 };
 
-export function Submission() {
+export const Submission = observer(() => {
   const [activeStep, setActiveStep] = React.useState(0);
 
   const handleNext = () => {
@@ -207,13 +213,58 @@ export function Submission() {
     setActiveStep(0);
   };
 
+  // useEffect(() => {
+  //   if (activeStep >= 3) {
+  //     alert("asas")
+  //   }
+  // }, [activeStep]);
+
   const [form, setForm] = useState<Form>({});
 
   const [sections, setSections] = useState<Section[]>([]);
 
+  const sending = useSimpleState(false);
+  const sendError = useSimpleState<string | null>(null);
+
   useEffect(() => {
     setSections(getSections(form, (key, value) => setForm({...form, [key]: value})))
   }, [form]);
+
+  const submitForm = (e: FormEvent) => {
+    e.preventDefault();
+    if (sending.value) {
+      return;
+    }
+    sending.set(true);
+
+    post<SubmitApplicationStatus, string>(
+      `${URL_BASE}/submit`,
+      buildProto<SubmitApplicationStatus>({
+        companyName: form.company,
+        stage: form.stage,
+        jobTitle: form.company,
+        // companyName: form.company,
+        // companyName: form.company,
+        // companyName: form.company,
+        // companyName: form.company,
+        // companyName: form.company,
+        // companyName: form.company,
+      }),
+      SubmitApplicationStatus,
+      undefined,
+    ).then((response) => {
+      sending.set(false);
+      if (response === "OK") {
+        // jump
+        return
+      } else {
+        sendError.set("Internal server error.");
+      }
+    }).catch(e => {
+      sending.set(false);
+      sendError.set(`Network error: ${e.message}`);
+    })
+  };
 
   return (
     <Stack>
@@ -227,7 +278,7 @@ export function Submission() {
           </Container>
         </Stack>
         <Container>
-          <Stack pt={4} pb={4} spacing={2}>
+          <Stack pt={4} pb={4} spacing={2} component={"form"} onSubmit={submitForm}>
             <Stepper activeStep={activeStep} orientation="vertical">
               {sections.map((step, index) => (
                 <Step key={step.label}>
@@ -244,13 +295,34 @@ export function Submission() {
                     <>{step.content}</>
                     <Box sx={{mb: 2}}>
                       <div>
-                        <Button
-                          variant="contained"
-                          onClick={handleNext}
-                          sx={{mt: 1, mr: 1}}
-                        >
-                          {index === sections.length - 1 ? 'Finish' : 'Continue'}
-                        </Button>
+                        {index === sections.length - 1 ? (
+                          <Button
+                            variant="contained"
+                            type="submit"
+                            sx={{mt: 1, mr: 1}}
+                            endIcon={
+                              sending.value ? (
+                                <CircularProgress
+                                  sx={{
+                                    color: "primary.contrastText",
+                                    width: "20px !important",
+                                    height: "20px !important"
+                                  }}
+                                />
+                              ) : null
+                            }
+                          >
+                            Finish
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="contained"
+                            onClick={handleNext}
+                            sx={{mt: 1, mr: 1}}
+                          >
+                            Continue
+                          </Button>
+                        )}
                         <Button
                           disabled={index === 0}
                           onClick={handleBack}
@@ -268,9 +340,15 @@ export function Submission() {
         </Container>
       </Background>
       <Footer/>
+      <Snack
+        open={!!sendError.value}
+        message={sendError.value}
+        severity={"error"}
+        onClose={() => sendError.set(null)}
+      />
     </Stack>
   )
-}
+})
 
 const StyledTextField = styled(TextField)`
   width: 300px;
