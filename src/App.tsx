@@ -40,9 +40,7 @@ export function App() {
         <Routes>
           <Route path="/" element={<Home/>}/>
           <Route path="/submit" element={<Submission/>}/>
-          <Route path="/company">
-            <Route path=":companyId" element={<Company/>}/>
-          </Route>
+          <Route path="/company" element={<Company/>}/>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
