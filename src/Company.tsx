@@ -8,6 +8,7 @@ import {
   FormGroup,
   Grid,
   Stack,
+  Tooltip,
   Typography
 } from "@mui/material";
 import { ScrollToTop } from "@app/ScrollToTop";
@@ -15,40 +16,43 @@ import { Background } from "@app/Background";
 import { Footer } from "@app/Footer";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { capitalize, keys } from "@app/helpers";
+import { normalize } from "@app/helpers";
 import { CompanyStatsRequest, Stage } from "@app/proto/api";
 import { difference, max, union } from "lodash";
 import styled from "styled-components";
-import { cleanScrollBar } from "@app/styles";
+import { cleanScrollBarWithWhiteBorder } from "@app/styles";
 import post from "@app/post";
 import { URL_BASE } from "@app/api";
 import { buildProto } from "@app/buildProto";
 
-type CompanyStatsResponse = {
-  domain: string
+interface CompanyStatsResponse {
+  domain: string;
   stages: {
     [stage: string]: {
       [char: string]: {
-        [value: string]: number
+        [value: string]: number;
       }
     }
-  }
+  };
 }
-
 
 const getCompanyStatsByName = async (name: string) => {
   return (await post<CompanyStatsRequest, CompanyStatsResponse>(
     `${URL_BASE}/company/${name}`,
     buildProto<CompanyStatsRequest>({
       interestedAttributes: Characteristics,
-      jobTitleFilter: '',
+      jobTitleFilter: "",
     }),
     CompanyStatsRequest,
     undefined,
-  ))
-}
+  ));
+};
 
-const Stages = keys(Stage);
+const Stages = Object
+  .keys(Stage)
+  .filter(value => isNaN(Number(value)))
+  .slice(1)
+  .slice(0, -1);
 
 const Characteristics = [
   "gender",
@@ -61,7 +65,7 @@ const Characteristics = [
   "criminal_background",
   "indigenous",
   "marriage_status",
-]
+];
 
 export function Company() {
   const [searchParams] = useSearchParams();
@@ -73,49 +77,65 @@ export function Company() {
     (async () => {
       const data = await getCompanyStatsByName(companyName);
       setCompany(data);
-    })()
-  }, [companyName])
+    })();
+  }, [companyName]);
 
-  const stages = Stages.map((stage, index) => (
-    <Stack spacing={2}>
-      <Typography variant={"h6"}>{stage}</Typography>
-      <StyledStack pb={2} spacing={8} direction={"row"} sx={{overflowX: "auto"}}>
-        {charsToShow.map(char => {
-          const char_display = char.split("_").map(capitalize).join(" ");
-          const charData = company?.stages[stage][char]
-          if (!charData) return null
+  const stages = Stages.map((stage) => (
+    <Stack spacing={3}>
+      <Typography variant={"h5"} pl={0}>{normalize(stage)}</Typography>
+      <StyledStack pb={2} spacing={3} direction={"row"} sx={{overflowX: "auto"}}>
+        {charsToShow.map((char, index) => {
+          const charData = company?.stages[stage][char];
+          if (!charData) return null;
           const data = Object.keys(charData).map(key => ({
             name: key,
             value: charData[key]
-          })) ?? []
+          })) ?? [];
           const maxValue = max(data.map(it => it.value))!;
           return (
             <Stack direction={"row"} spacing={1}>
               <Stack pt={4.5} spacing={2}>
                 <Stack spacing={2}>
                   {data.map(it => (
-                    <Typography align={"right"}>{it.name}</Typography>
+                    <Typography
+                      minWidth={48}
+                      variant={"caption"}
+                      whiteSpace={"nowrap"}
+                      align={"right"}
+                    >{
+                      it.name.startsWith("OTHER")
+                        ? "Other"
+                        : normalize(it.name)
+                    }</Typography>
                   ))}
                 </Stack>
               </Stack>
               <Stack spacing={2}>
-                <Typography>{char_display}</Typography>
+                <Typography fontWeight={700}>{normalize(char)}</Typography>
                 <Stack spacing={2}>
                   {data.map(it => (
-                    <Box
-                      width={it.value / maxValue * 180}
-                      height={21}
-                      bgcolor={"primary.main"}
-                    />
+                    <Tooltip title={it.value}>
+                      <Box
+                        width={it.value / maxValue * 180}
+                        height={21}
+                        bgcolor={"primary.main"}
+                        sx={{
+                          transition: "background-color 0.2s ease",
+                          ":hover": {
+                            backgroundColor: "#09314B",
+                          }
+                        }}
+                      />
+                    </Tooltip>
                   ))}
                 </Stack>
               </Stack>
             </Stack>
-          )
+          );
         })}
       </StyledStack>
     </Stack>
-  ))
+  ));
 
   return (
     <Stack>
@@ -127,9 +147,9 @@ export function Company() {
               <Avatar
                 alt={companyName}
                 src={`https://logo.clearbit.com/${company?.domain}`}
-                sx={{width: 90, height: 90, mt: 14, mb: 3}}
+                sx={{width: 90, height: 90, mt: 18, mb: 3, objectFit: "contain"}}
               />
-              <Typography pt={16} pb={6} variant={"h3"} fontWeight={800}>
+              <Typography pt={20} pb={6} variant={"h3"} fontWeight={800}>
                 {companyName}
               </Typography>
             </Stack>
@@ -151,14 +171,14 @@ export function Company() {
                             checked={charsToShow.includes(char)}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                setCharsToShow(union(charsToShow, [char]))
+                                setCharsToShow(union(charsToShow, [char]));
                               } else {
-                                setCharsToShow(difference(charsToShow, [char]))
+                                setCharsToShow(difference(charsToShow, [char]));
                               }
                             }}
                           />
                         }
-                        label={char.split("_").map(capitalize).join(" ")}
+                        label={normalize(char)}
                       />
                     ))}
                   </FormGroup>
@@ -170,7 +190,7 @@ export function Company() {
               </Stack>
             </Grid>
             <Grid item sm={9} md={9} lg={10} sx={{maxHeight: "100%", overflowY: "auto"}}>
-              <Stack pl={3} pt={4} pb={4} spacing={10}>
+              <Stack pt={4} pb={4} spacing={10}>
                 {stages}
               </Stack>
             </Grid>
@@ -179,10 +199,10 @@ export function Company() {
       </Background>
       <Footer/>
     </Stack>
-  )
+  );
 }
 
 
 const StyledStack = styled(Stack)`
-  ${cleanScrollBar};
+  ${cleanScrollBarWithWhiteBorder};
 `;

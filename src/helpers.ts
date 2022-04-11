@@ -6,4 +6,6 @@ export const keys = (raw: Object) => Object
   .keys(raw)
   .filter(value => isNaN(Number(value)))
   .slice(0, -1)
-  .map(it => it.split("_").map(capitalize).join(" "))
+  .map(normalize)
+
+export const normalize = (raw: string) => raw.split("_").map(capitalize).join(" ")

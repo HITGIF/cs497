@@ -24,7 +24,7 @@ import { Footer } from "@app/Footer";
 import React, { FormEvent, useState } from "react";
 import { CompanySelect } from "@app/CompanySelect";
 import { CountrySelect } from "@app/CountrySelect";
-import { Help } from '@mui/icons-material';
+import { Help } from "@mui/icons-material";
 import {
   BooleanAnswer,
   EducationLevel,
@@ -36,19 +36,13 @@ import {
   SubmitApplicationStatus,
   VisaStatus
 } from "@app/proto/api";
-import { capitalize } from "@app/helpers";
+import { keys } from "@app/helpers";
 import { useSimpleState } from "@app/useSimpleState";
 import post from "@app/post";
 import { URL_BASE } from "@app/api";
 import { buildProto } from "@app/buildProto";
 import { Snack } from "@app/Snack";
 import { observer } from "mobx-react";
-
-const keys = (raw: Object) => Object
-  .keys(raw)
-  .filter(value => isNaN(Number(value)))
-  .slice(0, -1)
-  .map(it => it.split("_").map(capitalize).join(" "))
 
 const jobInfoFields: Field[] = [
   {
@@ -70,7 +64,7 @@ const jobInfoFields: Field[] = [
     options: keys(Stage),
     helper: "Please select the last stage you have been through",
   },
-]
+];
 
 const aboutFields: Field[] = [
   {
@@ -195,10 +189,6 @@ export const Submission = observer(() => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
-  };
-
   const [form, setForm] = useState<Form>({});
   const sending = useSimpleState(false);
   const sendError = useSimpleState<string | null>(null);
@@ -239,15 +229,15 @@ export const Submission = observer(() => {
     ).then((response) => {
       sending.set(false);
       if (response === "OK") {
-        // jump
-        return
+        // TODO jump
+        return;
       } else {
         sendError.set("Internal server error.");
       }
     }).catch(e => {
       sending.set(false);
       sendError.set(`Network error: ${e.message}`);
-    })
+    });
   };
 
   const setField = (key: string, value: any) => setForm({...form, [key]: value});
@@ -264,7 +254,7 @@ export const Submission = observer(() => {
             value={form[field.key]}
             label={field.label}
             onChange={(e) => {
-              setField(field.key, e.target.value)
+              setField(field.key, e.target.value);
             }}
           >
             {field.options.map((option, index) => (
@@ -278,7 +268,7 @@ export const Submission = observer(() => {
           label={field.label}
           value={form[field.key]}
           onChange={(e) => {
-            setField(field.key, e.target.value)
+            setField(field.key, e.target.value);
           }}
         />
       )}
@@ -292,43 +282,43 @@ export const Submission = observer(() => {
     </Stack>
   );
 
-  const sections = [
+  const sections: Section[] = [
     {
-      label: 'Job Information',
+      label: "Job Information",
       content: (
         <Stack sx={{marginY: 2}} spacing={2}>
           <CompanySelect
             value={form["company"]}
             onChange={(name, domain) => {
-              setField("company", name)
-              setField("companyDomain", domain)
+              setField("company", name);
+              setField("companyDomain", domain);
             }}/>
           {jobInfoFields.map(render)}
         </Stack>
       ),
     },
     {
-      label: 'Identity',
+      label: "Identity",
       content: (
         <Stack sx={{marginY: 2}} spacing={2}>
           <CountrySelect
             value={form.country}
             onChange={text => {
-              setField("country", text)
+              setField("country", text);
             }}/>
           {aboutFields.map(render)}
         </Stack>
       ),
     },
     {
-      label: 'Education',
+      label: "Education",
       content: (
         <Stack sx={{marginY: 2}} spacing={2}>
           {educationFields.map(render)}
         </Stack>
       ),
     },
-  ]
+  ];
 
   return (
     <Stack>
@@ -336,7 +326,7 @@ export const Submission = observer(() => {
       <Background color={"background.default"}>
         <Stack width={"100%"} height={"fit-content"} bgcolor={"primary.main"}>
           <Container>
-            <Typography pt={16} pb={6} variant={"h3"} fontWeight={800}>
+            <Typography pt={20} pb={6} variant={"h3"} fontWeight={800}>
               Share Your Application Experience
             </Typography>
           </Container>
@@ -411,30 +401,18 @@ export const Submission = observer(() => {
         onClose={() => sendError.set(null)}
       />
     </Stack>
-  )
-})
+  );
+});
 
-const StyledTextField
-  =
-  styled
-  (
-    TextField)`
-    width: 300px;
-  `
+const StyledTextField = styled(TextField)`
+  width: 300px;
+`;
 
-const StyledSelect
-  =
-  styled
-  (
-    Select)`
-    width: 300px;
-  `
+const StyledSelect = styled(Select)`
+  width: 300px;
+`;
 
-const StyledIconButton
-  =
-  styled
-  (
-    IconButton)`
-    width: 40px;
-    height: 40px;
-  `
+const StyledIconButton = styled(IconButton)`
+  width: 40px;
+  height: 40px;
+`;

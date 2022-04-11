@@ -5,7 +5,7 @@ import "./styles.css";
 export const ToolBarHeight = "64px";
 
 export const cleanScrollBar = css`
-  scrollbar-color: #dadce0 transparent;
+  scrollbar-color: #FFFFFF transparent;
 
   ::-webkit-scrollbar {
     width: 8px;
@@ -18,11 +18,11 @@ export const cleanScrollBar = css`
   ::-webkit-scrollbar-thumb {
     border-radius: 8px;
     min-height: 40px;
-    background: #dadce0;
+    background: #e1f5fe;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #bdc1c6;
+    background: #afc2cb;
   }
 `;
 
@@ -33,7 +33,7 @@ export const cleanScrollBarWithWhiteBorder = css`
   }
 
   ::-webkit-scrollbar-thumb {
-    border: 4px solid white;
+    border: 4px solid #EDFDFF;
   }
 `;
 
