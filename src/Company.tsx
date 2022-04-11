@@ -15,65 +15,69 @@ import { Background } from "@app/Background";
 import { Footer } from "@app/Footer";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { keys } from "@app/helpers";
-import { Stage } from "@app/proto/api";
+import { capitalize, keys } from "@app/helpers";
+import { CompanyStatsRequest, Stage } from "@app/proto/api";
 import { difference, max, union } from "lodash";
 import styled from "styled-components";
 import { cleanScrollBar } from "@app/styles";
+import post from "@app/post";
+import { URL_BASE } from "@app/api";
+import { buildProto } from "@app/buildProto";
 
-type Suggestion = {
-  name?: string;
-  domain?: string;
-  logo?: string;
+type CompanyStatsResponse = {
+  domain: string
+  stages: Map<string, Map<string, Map<any, number>>>
 }
 
-const getCompany = (domain: string) => {
-  return fetch(`https://autocomplete.clearbit.com/v1/companies/suggest?query=${domain}`)
-    .then(response => response.json())
-    .then(data => data as Suggestion[])
+
+const getCompanyStatsByName = async (name: string) => {
+  return (await post<CompanyStatsRequest, CompanyStatsResponse>(
+    `${URL_BASE}/company/${name}`,
+    buildProto<CompanyStatsRequest>({
+      interestedAttributes: Characteristics,
+      jobTitleFilter: '',
+    }),
+    CompanyStatsRequest,
+    undefined,
+  ))
 }
 
 const Stages = keys(Stage);
 
 const Characteristics = [
-  "Gender",
-  "Ethnicity",
-  "Ethnicity1",
-  "Ethnicity2",
-  "Ethnicity3",
-  "Ethnicity4",
-  "Ethnicity5",
-  "Ethnicity6",
-  "Ethnicity7",
-  "Ethnicity8",
+  "gender",
+  "sexual_orientation",
+  "racial_origin",
+  "visa_status",
+  "nationality",
+  "disability",
+  "veteran_status",
+  "criminal_background",
+  "indigenous",
+  "marriage_status",
 ]
 
 export function Company() {
   const [searchParams] = useSearchParams();
-  const companyDomain = searchParams.get("domain");
-  const companyName = searchParams.get("name");
-  const [company, setCompany] = useState<Suggestion>({});
+  const companyName = searchParams.get("name") as string;
+  const [company, setCompany] = useState<CompanyStatsResponse>();
   const [charsToShow, setCharsToShow] = useState(Characteristics);
 
   useEffect(() => {
     (async () => {
-      if (companyDomain) {
-        const data = await getCompany(companyDomain);
-        setCompany(data[0]);
-      }
+      const data = await getCompanyStatsByName(companyName);
+      setCompany(data);
     })()
-  }, [companyDomain])
+  }, [companyName])
 
   const stages = Stages.map((stage, index) => (
     <Stack spacing={2}>
       <Typography variant={"h6"}>{stage}</Typography>
       <StyledStack pb={2} spacing={8} direction={"row"} sx={{overflowX: "auto"}}>
         {charsToShow.map(char => {
-          const data = [
-            {name: "awqe", value: 12},
-            {name: "b", value: 20},
-            {name: "cw", value: 11},
-          ]
+          const char_display = char.split("_").map(capitalize).join(" ");
+          const charData = company?.stages?.get(stage)?.get(char)
+          const data = charData?.keys()?.map(key => ({name: key, value: charData?.get(key)})) ?? []
           const maxValue = max(data.map(it => it.value))!;
           return (
             <Stack direction={"row"} spacing={1}>
@@ -85,7 +89,7 @@ export function Company() {
                 </Stack>
               </Stack>
               <Stack spacing={2}>
-                <Typography>{char}</Typography>
+                <Typography>{char_display}</Typography>
                 <Stack spacing={2}>
                   {data.map(it => (
                     <Box
@@ -111,12 +115,12 @@ export function Company() {
           <Container>
             <Stack direction={"row"} spacing={4}>
               <Avatar
-                alt={company.name}
-                src={company.logo}
+                alt={companyName}
+                src={`https://logo.clearbit.com/${company?.domain}`}
                 sx={{width: 90, height: 90, mt: 14, mb: 3}}
               />
               <Typography pt={16} pb={6} variant={"h3"} fontWeight={800}>
-                {company.name ?? companyName}
+                {companyName}
               </Typography>
             </Stack>
           </Container>
@@ -144,7 +148,7 @@ export function Company() {
                             }}
                           />
                         }
-                        label={char}
+                        label={char.split("_").map(capitalize).join(" ")}
                       />
                     ))}
                   </FormGroup>
