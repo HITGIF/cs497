@@ -292,6 +292,44 @@ export const Submission = observer(() => {
     </Stack>
   );
 
+  const sections = [
+    {
+      label: 'Job Information',
+      content: (
+        <Stack sx={{marginY: 2}} spacing={2}>
+          <CompanySelect
+            value={form["company"]}
+            onChange={(name, domain) => {
+              setField("company", name)
+              setField("companyDomain", domain)
+            }}/>
+          {jobInfoFields.map(render)}
+        </Stack>
+      ),
+    },
+    {
+      label: 'Identity',
+      content: (
+        <Stack sx={{marginY: 2}} spacing={2}>
+          <CountrySelect
+            value={form.country}
+            onChange={text => {
+              setField("country", text)
+            }}/>
+          {aboutFields.map(render)}
+        </Stack>
+      ),
+    },
+    {
+      label: 'Education',
+      content: (
+        <Stack sx={{marginY: 2}} spacing={2}>
+          {educationFields.map(render)}
+        </Stack>
+      ),
+    },
+  ]
+
   return (
     <Stack>
       <ScrollToTop/>
@@ -306,43 +344,7 @@ export const Submission = observer(() => {
         <Container>
           <Stack pt={4} pb={4} spacing={2} component={"form"} onSubmit={submitForm}>
             <Stepper activeStep={activeStep} orientation="vertical">
-              {[
-                {
-                  label: 'Job Information',
-                  content: (
-                    <Stack sx={{marginY: 2}} spacing={2}>
-                      <CompanySelect
-                        value={form["company"]}
-                        onChange={(name, domain) => {
-                          setField("company", name)
-                          setField("companyDomain", domain)
-                        }}/>
-                      {jobInfoFields.map(render)}
-                    </Stack>
-                  ),
-                },
-                {
-                  label: 'Identity',
-                  content: (
-                    <Stack sx={{marginY: 2}} spacing={2}>
-                      <CountrySelect
-                        value={form.country}
-                        onChange={text => {
-                          setField("country", text)
-                        }}/>
-                      {aboutFields.map(render)}
-                    </Stack>
-                  ),
-                },
-                {
-                  label: 'Education',
-                  content: (
-                    <Stack sx={{marginY: 2}} spacing={2}>
-                      {educationFields.map(render)}
-                    </Stack>
-                  ),
-                },
-              ].map((step, index) => (
+              {sections.map((step, index) => (
                 <Step key={step.label}>
                   <StepLabel
                     optional={

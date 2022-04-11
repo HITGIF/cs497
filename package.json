@@ -58,6 +58,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.181",
     "babel-loader": "^8.2.4",
     "babel-plugin-import": "^1.13.3",
     "babel-polyfill": "^6.26.0",
