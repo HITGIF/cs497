@@ -17,36 +17,11 @@ import { Footer } from "@app/Footer";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { normalize } from "@app/helpers";
-import { CompanyStatsRequest, Stage } from "@app/proto/api";
+import { Stage } from "@app/proto/api";
 import { difference, max, union } from "lodash";
 import styled from "styled-components";
 import { cleanScrollBarWithWhiteBorder } from "@app/styles";
-import post from "@app/post";
-import { URL_BASE } from "@app/api";
-import { buildProto } from "@app/buildProto";
-
-interface CompanyStatsResponse {
-  domain: string;
-  stages: {
-    [stage: string]: {
-      [char: string]: {
-        [value: string]: number;
-      }
-    }
-  };
-}
-
-const getCompanyStatsByName = async (name: string) => {
-  return (await post<CompanyStatsRequest, CompanyStatsResponse>(
-    `${URL_BASE}/company/${name}`,
-    buildProto<CompanyStatsRequest>({
-      interestedAttributes: Characteristics,
-      jobTitleFilter: "",
-    }),
-    CompanyStatsRequest,
-    undefined,
-  ));
-};
+import { CHARACTERISTICS, companyLogo, CompanyStatsResponse, getCompanyStatsByName } from "@app/CompanyApi";
 
 const Stages = Object
   .keys(Stage)
@@ -54,24 +29,11 @@ const Stages = Object
   .slice(1)
   .slice(0, -1);
 
-const Characteristics = [
-  "gender",
-  "sexual_orientation",
-  "racial_origin",
-  "visa_status",
-  "nationality",
-  "disability",
-  "veteran_status",
-  "criminal_background",
-  "indigenous",
-  "marriage_status",
-];
-
 export function Company() {
   const [searchParams] = useSearchParams();
   const companyName = searchParams.get("name") as string;
   const [company, setCompany] = useState<CompanyStatsResponse>();
-  const [charsToShow, setCharsToShow] = useState(Characteristics);
+  const [charsToShow, setCharsToShow] = useState(CHARACTERISTICS);
 
   useEffect(() => {
     (async () => {
@@ -146,7 +108,7 @@ export function Company() {
             <Stack direction={"row"} spacing={4}>
               <Avatar
                 alt={companyName}
-                src={`https://logo.clearbit.com/${company?.domain}`}
+                src={company ? companyLogo(company.domain) : ""}
                 sx={{width: 90, height: 90, mt: 18, mb: 3, objectFit: "contain"}}
               />
               <Typography pt={20} pb={6} variant={"h3"} fontWeight={800}>
@@ -164,7 +126,7 @@ export function Company() {
                     Variable
                   </Typography>
                   <FormGroup>
-                    {Characteristics.map(char => (
+                    {CHARACTERISTICS.map(char => (
                       <FormControlLabel
                         control={
                           <Checkbox
