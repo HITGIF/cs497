@@ -18,7 +18,13 @@ export function Home() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companiesToShow, setCompaniesToShow] = useState(companies);
   const [filter, setFilter] = useState<string>();
-  const updateCompaniesToShow = (companies: Company[], filter: string | undefined) => {
+
+  useEffect(() => {
+    getCompanies()
+      .then((companies) => setCompanies(companies));
+  }, []);
+
+  useEffect(() => {
     if (!filter) {
       setCompaniesToShow(companies);
       return;
@@ -26,14 +32,7 @@ export function Home() {
     setCompaniesToShow(companies.filter(it =>
       it.name.toLocaleLowerCase().includes(filter)
     ));
-  };
-  useEffect(() => {
-    getCompanies()
-      .then((companies) => {
-        setCompanies(companies);
-        updateCompaniesToShow(companies, filter);
-      });
-  }, []);
+  }, [filter, companies]);
 
   return (
     <Stack>
@@ -65,7 +64,6 @@ export function Home() {
                   inputProps={{"aria-label": "search google maps"}}
                   onChange={(e) => {
                     setFilter(e.target.value);
-                    updateCompaniesToShow(companies, e.target.value);
                   }}
                 />
                 <IconButton disabled sx={{p: "10px"}} aria-label="search">
