@@ -43,6 +43,7 @@ import { URL_BASE } from "@app/api";
 import { buildProto } from "@app/buildProto";
 import { Snack } from "@app/Snack";
 import { observer } from "mobx-react";
+import { Navigate } from "react-router-dom";
 
 const jobInfoFields: Field[] = [
   {
@@ -184,6 +185,11 @@ export const Submission = observer(() => {
   const [form, setForm] = useState<Form>({});
   const sending = useSimpleState(false);
   const sendError = useSimpleState<string | null>(null);
+  const [shouldNavigate, setShouldNavigate] = useState(false);
+
+  if (shouldNavigate) {
+    return <Navigate to="/"/>;
+  }
 
   const submitForm = (e: FormEvent) => {
     e.preventDefault();
@@ -198,9 +204,7 @@ export const Submission = observer(() => {
         companyName: form.company,
         companyDomain: form.companyDomain,
         stage: form.stage,
-        jobTitle: form.company,
-        hourlyCompensation: form.compensation,
-        dateOfDecision: form.date,
+        jobTitle: form.jobTitle,
         gender: form.gender,
         sexualOrientation: form.sexualOrientation,
         racialOrigin: form.racialOrigin,
@@ -209,10 +213,10 @@ export const Submission = observer(() => {
         disability: form.disability,
         veteranStatus: form.veteranStatus,
         criminalBackground: form.criminalBackground,
-        indigenous: form.indigenous,
+        indigenous: form.identifyAsIndigenousPeople,
         marriageStatus: form.marriageStatus,
-        educationLevel: form.educationLevel,
-        yearOfGraduation: form.yearOfGraduation,
+        educationLevel: form.education,
+        yearOfGraduation: form.graduationYear,
         yearsOfExperience: form.yearsOfExperience,
         gpa: form.gpa,
       }),
@@ -221,7 +225,7 @@ export const Submission = observer(() => {
     ).then((response) => {
       sending.set(false);
       if (response === "OK") {
-        // TODO jump
+        setShouldNavigate(true);
         return;
       } else {
         sendError.set("Internal server error.");
@@ -377,6 +381,10 @@ export const Submission = observer(() => {
                           Back
                         </Button>
                       </div>
+                      <Typography variant="caption" color="gray">
+                        Your data will be aggregated and shared anonymously.<br/>
+                        As a demo, please do not submit any real data just yet.
+                      </Typography>
                     </Box>
                   </StepContent>
                 </Step>

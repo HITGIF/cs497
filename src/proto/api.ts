@@ -429,7 +429,7 @@ export interface SubmitApplicationStatus {
   indigenous: BooleanAnswer;
   marriageStatus: MarriageStatus;
   educationLevel: EducationLevel;
-  yearOfGraduation: string;
+  yearOfGraduation: number;
   yearsOfExperience: number;
   gpa: number;
 }
@@ -463,7 +463,7 @@ function createBaseSubmitApplicationStatus(): SubmitApplicationStatus {
     indigenous: 0,
     marriageStatus: 0,
     educationLevel: 0,
-    yearOfGraduation: "",
+    yearOfGraduation: 0,
     yearsOfExperience: 0,
     gpa: 0,
   };
@@ -525,8 +525,8 @@ export const SubmitApplicationStatus = {
     if (message.educationLevel !== 0) {
       writer.uint32(128).int32(message.educationLevel);
     }
-    if (message.yearOfGraduation !== "") {
-      writer.uint32(138).string(message.yearOfGraduation);
+    if (message.yearOfGraduation !== 0) {
+      writer.uint32(136).int32(message.yearOfGraduation);
     }
     if (message.yearsOfExperience !== 0) {
       writer.uint32(144).int32(message.yearsOfExperience);
@@ -599,7 +599,7 @@ export const SubmitApplicationStatus = {
           message.educationLevel = reader.int32() as any;
           break;
         case 17:
-          message.yearOfGraduation = reader.string();
+          message.yearOfGraduation = reader.int32();
           break;
         case 18:
           message.yearsOfExperience = reader.int32();
@@ -659,8 +659,8 @@ export const SubmitApplicationStatus = {
         ? educationLevelFromJSON(object.educationLevel)
         : 0,
       yearOfGraduation: isSet(object.yearOfGraduation)
-        ? String(object.yearOfGraduation)
-        : "",
+        ? Number(object.yearOfGraduation)
+        : 0,
       yearsOfExperience: isSet(object.yearsOfExperience)
         ? Number(object.yearsOfExperience)
         : 0,
@@ -706,7 +706,7 @@ export const SubmitApplicationStatus = {
     message.educationLevel !== undefined &&
       (obj.educationLevel = educationLevelToJSON(message.educationLevel));
     message.yearOfGraduation !== undefined &&
-      (obj.yearOfGraduation = message.yearOfGraduation);
+      (obj.yearOfGraduation = Math.round(message.yearOfGraduation));
     message.yearsOfExperience !== undefined &&
       (obj.yearsOfExperience = Math.round(message.yearsOfExperience));
     message.gpa !== undefined && (obj.gpa = message.gpa);
@@ -734,7 +734,7 @@ export const SubmitApplicationStatus = {
     message.indigenous = object.indigenous ?? 0;
     message.marriageStatus = object.marriageStatus ?? 0;
     message.educationLevel = object.educationLevel ?? 0;
-    message.yearOfGraduation = object.yearOfGraduation ?? "";
+    message.yearOfGraduation = object.yearOfGraduation ?? 0;
     message.yearsOfExperience = object.yearsOfExperience ?? 0;
     message.gpa = object.gpa ?? 0;
     return message;

@@ -26,7 +26,6 @@ import { CHARACTERISTICS, companyLogo, CompanyStatsResponse, getCompanyStatsByNa
 const Stages = Object
   .keys(Stage)
   .filter(value => isNaN(Number(value)))
-  // .slice(1)
   .slice(0, -1);
 
 export function Company() {

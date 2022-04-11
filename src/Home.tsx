@@ -42,7 +42,7 @@ export function Home() {
           <Container maxWidth={"md"}>
             <Stack alignItems={"center"}>
               <Typography align={"center"} pt={30} mb={5} pb={6} variant={"h3"} fontWeight={800}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                <small>workplace</small>DIVERSIFIED
               </Typography>
               <Paper
                 component="form"
