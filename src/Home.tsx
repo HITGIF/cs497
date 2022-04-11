@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Container, Divider, Grid, IconButton, InputBase, Paper, Stack, Typography } from "@mui/material";
 import { Background } from "@app/Background";
 import { ScrollToTop } from "@app/ScrollToTop";
@@ -7,17 +7,34 @@ import { Add, Search } from "@mui/icons-material";
 import CompanyCard from "@app/CompanyCard";
 import { Company } from "@app/proto/api";
 import { LinkWrapper } from "@app/ButtonLink";
+import { URL_BASE } from "@app/api";
+
+const getCompanies = async () => {
+  const req = await fetch(`${URL_BASE}/company/`);
+  return (await req.json()) as Company[];
+};
 
 export function Home() {
-  const companies: Company[] = [
-    {name: "Google", domain: "google.com"},
-    {name: "Microsoft", domain: "microsoft.com"},
-    {name: "Faire", domain: "faire.com"},
-    {name: "Spotify", domain: "spotify.com"},
-    {name: "Facebook", domain: "facebook.com"},
-    {name: "Discord", domain: "discord.com"},
-  ];
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [companiesToShow, setCompaniesToShow] = useState(companies);
+  const [filter, setFilter] = useState<string>();
+  const updateCompaniesToShow = (companies: Company[], filter: string | undefined) => {
+    if (!filter) {
+      setCompaniesToShow(companies);
+      return;
+    }
+    setCompaniesToShow(companies.filter(it =>
+      it.name.toLocaleLowerCase().includes(filter)
+    ));
+  };
+  useEffect(() => {
+    getCompanies()
+      .then((companies) => {
+        setCompanies(companies);
+        updateCompaniesToShow(companies, filter);
+      });
+  }, []);
+
   return (
     <Stack>
       <ScrollToTop/>
@@ -47,9 +64,8 @@ export function Home() {
                   placeholder="Search Company"
                   inputProps={{"aria-label": "search google maps"}}
                   onChange={(e) => {
-                    setCompaniesToShow(companies.filter(it =>
-                      it.name.toLocaleLowerCase().includes(e.target.value)
-                    ));
+                    setFilter(e.target.value);
+                    updateCompaniesToShow(companies, e.target.value);
                   }}
                 />
                 <IconButton disabled sx={{p: "10px"}} aria-label="search">
@@ -69,7 +85,7 @@ export function Home() {
           <Stack pt={4} pb={4} spacing={2}>
             <Grid container pt={12} spacing={4} sx={{justifyContent: {xs: "center", md: "inherit"}}}>
               {Object.values(companiesToShow).map(company => (
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid item xs={12} sm={6} md={4} key={company.name}>
                   <CompanyCard company={company}/>
                 </Grid>
               ))}
