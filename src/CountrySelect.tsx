@@ -21,7 +21,6 @@ export function CountrySelect({value, onChange}: {
       renderInput={(params) => (
         <TextField
           {...params}
-          required
           label="Nationality"
           inputProps={{
             ...params.inputProps,
