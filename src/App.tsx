@@ -6,6 +6,7 @@ import { Submission } from "@app/Submission";
 import { MUITheme } from "@app/theme";
 import { Company } from "@app/Company";
 import { Home } from "@app/Home";
+import { Success } from "@app/Success";
 
 export function App() {
   return (
@@ -14,7 +15,9 @@ export function App() {
         <CssBaseline enableColorScheme/>
         <Routes>
           <Route path="/" element={<Home/>}/>
-          <Route path="/submit" element={<Submission/>}/>
+          <Route path="/submit" element={<Submission/>}>
+            <Route path="success" element={<Success/>}/>
+          </Route>
           <Route path="/company" element={<Company/>}/>
         </Routes>
       </HashRouter>

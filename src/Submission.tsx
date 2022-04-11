@@ -43,6 +43,7 @@ import { URL_BASE } from "@app/api";
 import { buildProto } from "@app/buildProto";
 import { Snack } from "@app/Snack";
 import { observer } from "mobx-react";
+import { useNavigate } from "react-router-dom";
 
 const jobInfoFields: Field[] = [
   {
@@ -171,6 +172,8 @@ type Section = {
 }
 
 export const Submission = observer(() => {
+  const navigate = useNavigate();
+
   const [activeStep, setActiveStep] = React.useState(0);
 
   const handleNext = () => {
@@ -221,7 +224,7 @@ export const Submission = observer(() => {
     ).then((response) => {
       sending.set(false);
       if (response === "OK") {
-        // TODO jump
+        navigate("/submit/success");
         return;
       } else {
         sendError.set("Internal server error.");
