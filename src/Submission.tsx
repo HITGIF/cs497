@@ -51,14 +51,6 @@ const jobInfoFields: Field[] = [
     required: true,
   },
   {
-    key: "compensation",
-    label: "Compensation",
-  },
-  {
-    key: "date",
-    label: "Date of Application",
-  },
-  {
     key: "stage",
     label: "Stage",
     options: keys(Stage),
