@@ -236,7 +236,8 @@ export const Submission = observer(() => {
     });
   };
 
-  const setField = (key: string, value: any) => setForm({...form, [key]: value});
+  const setField = (key: keyof FormRequired, value: any) => setForm({...form, [key]: value});
+  const setFields = (fields: { [key in keyof FormRequired]: any }) => setForm({...form, ...fields});
 
   const render = (field: Field) => (
     <Stack direction={"row"} spacing={1} alignItems={"center"}>
@@ -284,10 +285,12 @@ export const Submission = observer(() => {
       content: (
         <Stack sx={{marginY: 2}} spacing={2}>
           <CompanySelect
-            value={form["company"]}
-            onChange={(name, domain) => {
-              setField("company", name);
-              setField("companyDomain", domain);
+            value={form.company}
+            onChange={(name, domain?: string) => {
+              setFields({
+                company: name,
+                companyDomain: domain
+              });
             }}/>
           {jobInfoFields.map(render)}
         </Stack>
@@ -298,9 +301,9 @@ export const Submission = observer(() => {
       content: (
         <Stack sx={{marginY: 2}} spacing={2}>
           <CountrySelect
-            value={form.country}
+            value={form.nationality}
             onChange={text => {
-              setField("country", text);
+              setField("nationality", text);
             }}/>
           {aboutFields.map(render)}
         </Stack>
