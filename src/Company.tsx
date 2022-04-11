@@ -18,7 +18,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { normalize } from "@app/helpers";
 import { Stage } from "@app/proto/api";
-import { difference, max, sum, union } from "lodash";
+import { difference, max, orderBy, sortBy, sum, union } from "lodash";
 import styled from "styled-components";
 import { cleanScrollBarWithWhiteBorder } from "@app/styles";
 import { CHARACTERISTICS, companyLogo, CompanyStatsResponse, getCompanyStatsByName } from "@app/CompanyApi";
@@ -46,13 +46,13 @@ export function Company() {
     <Stack spacing={3}>
       <Typography variant={"h5"} pl={0}>{normalize(stage)}</Typography>
       <StyledStack pb={2} spacing={3} direction={"row"} sx={{overflowX: "auto"}}>
-        {charsToShow.map((char, index) => {
+        {charsToShow.map(char => {
           const charData = company?.stages[stage][char];
           if (!charData) return null;
-          const data = Object.keys(charData).map(key => ({
+          const data = orderBy(Object.keys(charData).map(key => ({
             name: key,
             value: charData[key]
-          })) ?? [];
+          })) ?? [], ["value"], ["desc"]);
           const maxValue = max(data.map(it => it.value))!;
           const total = sum(data.map(it => it.value))!;
           return (
