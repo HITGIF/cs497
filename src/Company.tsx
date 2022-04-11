@@ -57,7 +57,7 @@ export function Company() {
           const total = sum(data.map(it => it.value))!;
           return (
             <Stack direction={"row"} spacing={1}>
-              <Stack pt={4.5} spacing={2}>
+              <Stack pt={5} spacing={2}>
                 <Stack spacing={2}>
                   {data.map(it => (
                     <Typography
