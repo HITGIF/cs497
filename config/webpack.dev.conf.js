@@ -11,5 +11,11 @@ module.exports = merge(baseConfig, {
         static: "./build",
         port: 3000,
         allowedHosts: "all",
-    }
+        proxy: {
+            '/api/': {
+                target: 'http://localhost:8080',
+                pathRewrite: {'^/api': ''},
+            },
+        }
+    },
 });

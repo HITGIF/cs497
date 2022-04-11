@@ -211,7 +211,7 @@ export const Submission = observer(() => {
     sending.set(true);
 
     post<SubmitApplicationStatus, string>(
-      `${URL_BASE}/submit`,
+      `${URL_BASE}/apps/`,
       buildProto<SubmitApplicationStatus>({
         companyName: form.company,
         companyDomain: form.companyDomain,
@@ -414,27 +414,27 @@ export const Submission = observer(() => {
   )
 })
 
-  const StyledTextField
-=
+const StyledTextField
+  =
   styled
-(
-  TextField)`
-  width: 300px;
+  (
+    TextField)`
+    width: 300px;
   `
 
-  const StyledSelect
-=
+const StyledSelect
+  =
   styled
-(
-  Select)`
-  width: 300px;
+  (
+    Select)`
+    width: 300px;
   `
 
-  const StyledIconButton
-=
+const StyledIconButton
+  =
   styled
-(
-  IconButton)`
-  width: 40px;
-  height: 40px;
+  (
+    IconButton)`
+    width: 40px;
+    height: 40px;
   `
