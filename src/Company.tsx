@@ -26,7 +26,13 @@ import { cleanScrollBar } from "@app/styles";
 
 type CompanyStatsResponse = {
   domain: string
-  stages: Map<string, Map<string, Map<any, number>>>
+  stages: {
+    [stage: string]: {
+      [char: string]: {
+        [value: string]: number
+      }
+    }
+  }
 }
 
 
@@ -76,9 +82,12 @@ export function Company() {
       <StyledStack pb={2} spacing={8} direction={"row"} sx={{overflowX: "auto"}}>
         {charsToShow.map(char => {
           const char_display = char.split("_").map(capitalize).join(" ");
-          const charData = company?.stages?.get(stage)?.get(char)
-          if (!charData) return (<span/>)
-          const data = Array.from(charData!!)?.map(it => ({name: it[0], value: it[1]})) ?? []
+          const charData = company?.stages[stage][char]
+          if (!charData) return null
+          const data = Object.keys(charData).map(key => ({
+            name: key,
+            value: charData[key]
+          })) ?? []
           const maxValue = max(data.map(it => it.value))!;
           return (
             <Stack direction={"row"} spacing={1}>
