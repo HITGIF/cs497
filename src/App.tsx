@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import { Container, CssBaseline, Stack, Typography } from "@mui/material";
 import { Background } from "@app/Background";
@@ -35,14 +35,14 @@ function Home() {
 export function App() {
   return (
     <ThemeProvider theme={MUITheme}>
-      <BrowserRouter>
+      <HashRouter>
         <CssBaseline enableColorScheme/>
         <Routes>
           <Route path="/" element={<Home/>}/>
           <Route path="/submit" element={<Submission/>}/>
           <Route path="/company" element={<Company/>}/>
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </ThemeProvider>
   );
 }

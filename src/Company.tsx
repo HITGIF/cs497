@@ -18,11 +18,11 @@ import { useSearchParams } from "react-router-dom";
 import { capitalize, keys } from "@app/helpers";
 import { CompanyStatsRequest, Stage } from "@app/proto/api";
 import { difference, max, union } from "lodash";
-import styled from "styled-components";
-import { cleanScrollBar } from "@app/styles";
 import post from "@app/post";
 import { URL_BASE } from "@app/api";
 import { buildProto } from "@app/buildProto";
+import styled from "styled-components";
+import { cleanScrollBar } from "@app/styles";
 
 type CompanyStatsResponse = {
   domain: string
@@ -77,7 +77,8 @@ export function Company() {
         {charsToShow.map(char => {
           const char_display = char.split("_").map(capitalize).join(" ");
           const charData = company?.stages?.get(stage)?.get(char)
-          const data = charData?.keys()?.map(key => ({name: key, value: charData?.get(key)})) ?? []
+          if (!charData) return (<span/>)
+          const data = Array.from(charData!!)?.map(it => ({name: it[0], value: it[1]})) ?? []
           const maxValue = max(data.map(it => it.value))!;
           return (
             <Stack direction={"row"} spacing={1}>
