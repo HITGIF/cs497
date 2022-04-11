@@ -41,8 +41,8 @@ export function Home() {
         <Stack width={"100%"} height={"fit-content"} bgcolor={"primary.main"}>
           <Container maxWidth={"md"}>
             <Stack alignItems={"center"}>
-              <Typography align={"center"} pt={30} mb={5} pb={6} variant={"h3"} fontWeight={800}>
-                <small>workplace</small>DIVERSIFIED
+              <Typography align={"center"} pt={"20vh"} mb={5} pb={6} variant={"h3"} fontWeight={800}>
+                Help to create a more inclusive and diversified workplace
               </Typography>
               <Paper
                 component="form"
@@ -80,7 +80,7 @@ export function Home() {
           </Container>
         </Stack>
         <Container>
-          <Stack pt={4} pb={4} spacing={2}>
+          <Stack pt={4} pb={12} spacing={2}>
             <Grid container pt={12} spacing={4} sx={{justifyContent: {xs: "center", md: "inherit"}}}>
               {Object.values(companiesToShow).map(company => (
                 <Grid item xs={12} sm={6} md={4} key={company.name}>
