@@ -225,7 +225,7 @@ export const Submission = observer(() => {
       if (response === "OK") {
         navigate("/submit-success", { replace: true });
       } else {
-        sendError.set("Internal server error.");
+        sendError.set(`${response}.`);
       }
     }).catch(e => {
       sending.set(false);
