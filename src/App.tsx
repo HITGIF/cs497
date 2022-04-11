@@ -15,9 +15,8 @@ export function App() {
         <CssBaseline enableColorScheme/>
         <Routes>
           <Route path="/" element={<Home/>}/>
-          <Route path="/submit" element={<Submission/>}>
-            <Route path="success" element={<Success/>}/>
-          </Route>
+          <Route path="/submit" element={<Submission/>}/>
+          <Route path="/submit-success" element={<Success/>}/>
           <Route path="/company" element={<Company/>}/>
         </Routes>
       </HashRouter>

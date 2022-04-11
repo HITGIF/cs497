@@ -3,21 +3,23 @@ import { Container, Stack, Typography } from "@mui/material";
 import { Background } from "@app/Background";
 import { ScrollToTop } from "@app/ScrollToTop";
 import { Footer } from "@app/Footer";
+import { ButtonLink } from "@app/ButtonLink";
 
 export function Success() {
   return (
     <Stack>
       <ScrollToTop/>
-      <Background color={"background.default"}>
-        <Stack width={"100%"} height={"fit-content"} bgcolor={"primary.main"}>
+      <Background>
           <Container maxWidth={"md"}>
-            <Stack alignItems={"center"}>
-              <Typography align={"center"} pt={30} mb={5} pb={6} variant={"h3"} fontWeight={800}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            <Stack alignItems={"center"} justifyContent={"center"} height={"100vh"}>
+              <Typography align={"center"} pt={4}  pb={4} variant={"h3"} fontWeight={800}>
+                Successfully Submitted!
               </Typography>
+              <ButtonLink to={"/"}>
+                Back to home
+              </ButtonLink>
             </Stack>
           </Container>
-        </Stack>
       </Background>
       <Footer/>
     </Stack>

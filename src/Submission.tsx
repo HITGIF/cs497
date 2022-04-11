@@ -55,6 +55,7 @@ const jobInfoFields: Field[] = [
     key: "stage",
     label: "Stage",
     options: keys(Stage),
+    required: true,
     helper: "Please select the last stage you have been through",
   },
 ];
@@ -77,7 +78,7 @@ const aboutFields: Field[] = [
   },
   {
     key: "identifyAsIndigenousPeople",
-    label: "I identify as indigenous people",
+    label: "I identify as an indigenous person",
     options: keys(BooleanAnswer),
   },
   {
@@ -222,8 +223,7 @@ export const Submission = observer(() => {
     ).then((response) => {
       sending.set(false);
       if (response === "OK") {
-        navigate("/submit/success");
-        return;
+        navigate("/submit-success", { replace: true });
       } else {
         sendError.set("Internal server error.");
       }
@@ -239,10 +239,9 @@ export const Submission = observer(() => {
   const render = (field: Field) => (
     <Stack direction={"row"} spacing={1} alignItems={"center"}>
       {field.options ? (
-        <FormControl>
+        <FormControl required={field.required}>
           <InputLabel id={`${field.key}-label`}>{field.label}</InputLabel>
           <StyledSelect
-            required={field.required}
             labelId={`${field.key}-label`}
             id={field.key}
             value={form[field.key]}
