@@ -18,7 +18,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { normalize } from "@app/helpers";
 import { Stage } from "@app/proto/api";
-import { difference, max, orderBy, sortBy, sum, union } from "lodash";
+import { difference, max, orderBy, sum, union } from "lodash";
 import styled from "styled-components";
 import { cleanScrollBarWithWhiteBorder } from "@app/styles";
 import { CHARACTERISTICS, companyLogo, CompanyStatsResponse, getCompanyStatsByName } from "@app/CompanyApi";
@@ -26,7 +26,6 @@ import { CHARACTERISTICS, companyLogo, CompanyStatsResponse, getCompanyStatsByNa
 const Stages = Object
   .keys(Stage)
   .filter(value => isNaN(Number(value)))
-  // .slice(1)
   .slice(0, -1);
 
 export function Company() {
@@ -34,6 +33,17 @@ export function Company() {
   const companyName = searchParams.get("name") as string;
   const [company, setCompany] = useState<CompanyStatsResponse>();
   const [charsToShow, setCharsToShow] = useState(CHARACTERISTICS);
+
+  const displayHintForSmallSample = (stageData: { [p: string]: { [p: string]: number } } | undefined) => {
+    if (!stageData || sum(Object.values(stageData).map(char => Object.keys(char).length)) == 0) {
+      return (<Typography variant={"caption"}>
+        Stats with fewer than 5 data points are hidden to prevent identifying
+        individuals
+      </Typography>);
+    } else {
+      return null;
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -46,6 +56,8 @@ export function Company() {
     <Stack spacing={3}>
       <Typography variant={"h5"} pl={0}>{normalize(stage)}</Typography>
       <StyledStack pb={2} spacing={3} direction={"row"} sx={{overflowX: "auto"}}>
+        {displayHintForSmallSample(company?.stages[stage])}
+
         {charsToShow.map(char => {
           const charData = company?.stages[stage][char];
           if (!charData) return null;

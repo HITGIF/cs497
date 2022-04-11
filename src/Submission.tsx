@@ -201,9 +201,7 @@ export const Submission = observer(() => {
         companyName: form.company,
         companyDomain: form.companyDomain,
         stage: form.stage,
-        jobTitle: form.company,
-        hourlyCompensation: form.compensation,
-        dateOfDecision: form.date,
+        jobTitle: form.jobTitle,
         gender: form.gender,
         sexualOrientation: form.sexualOrientation,
         racialOrigin: form.racialOrigin,
@@ -212,10 +210,10 @@ export const Submission = observer(() => {
         disability: form.disability,
         veteranStatus: form.veteranStatus,
         criminalBackground: form.criminalBackground,
-        indigenous: form.indigenous,
+        indigenous: form.identifyAsIndigenousPeople,
         marriageStatus: form.marriageStatus,
-        educationLevel: form.educationLevel,
-        yearOfGraduation: form.yearOfGraduation,
+        educationLevel: form.education,
+        yearOfGraduation: form.graduationYear,
         yearsOfExperience: form.yearsOfExperience,
         gpa: form.gpa,
       }),
@@ -235,8 +233,8 @@ export const Submission = observer(() => {
     });
   };
 
-  const setField = (key: keyof FormRequired, value: any) => setForm({...form, [key]: value});
-  const setFields = (fields: { [key in keyof FormRequired]: any }) => setForm({...form, ...fields});
+  const setField = (key: keyof FormRequired, value: any) => setForm({ ...form, [key]: value });
+  const setFields = (fields: { [key in keyof FormRequired]: any }) => setForm({ ...form, ...fields });
 
   const render = (field: Field) => (
     <Stack direction={"row"} spacing={1} alignItems={"center"}>
@@ -271,7 +269,7 @@ export const Submission = observer(() => {
       {field.helper ? (
         <Tooltip title={field.helper}>
           <StyledIconButton>
-            <Help/>
+            <Help />
           </StyledIconButton>
         </Tooltip>
       ) : null}
@@ -282,7 +280,7 @@ export const Submission = observer(() => {
     {
       label: "Job Information",
       content: (
-        <Stack sx={{marginY: 2}} spacing={2}>
+        <Stack sx={{ marginY: 2 }} spacing={2}>
           <CompanySelect
             value={form.company}
             onChange={(name, domain?: string) => {
@@ -290,7 +288,7 @@ export const Submission = observer(() => {
                 company: name,
                 companyDomain: domain
               });
-            }}/>
+            }} />
           {jobInfoFields.map(render)}
         </Stack>
       ),
@@ -298,12 +296,12 @@ export const Submission = observer(() => {
     {
       label: "Identity",
       content: (
-        <Stack sx={{marginY: 2}} spacing={2}>
+        <Stack sx={{ marginY: 2 }} spacing={2}>
           <CountrySelect
             value={form.nationality}
             onChange={text => {
               setField("nationality", text);
-            }}/>
+            }} />
           {aboutFields.map(render)}
         </Stack>
       ),
@@ -311,7 +309,7 @@ export const Submission = observer(() => {
     {
       label: "Education",
       content: (
-        <Stack sx={{marginY: 2}} spacing={2}>
+        <Stack sx={{ marginY: 2 }} spacing={2}>
           {educationFields.map(render)}
         </Stack>
       ),
@@ -320,7 +318,7 @@ export const Submission = observer(() => {
 
   return (
     <Stack>
-      <ScrollToTop/>
+      <ScrollToTop />
       <Background color={"background.default"}>
         <Stack width={"100%"} height={"fit-content"} bgcolor={"primary.main"}>
           <Container>
@@ -345,13 +343,13 @@ export const Submission = observer(() => {
                   </StepLabel>
                   <StepContent>
                     <>{step.content}</>
-                    <Box sx={{mb: 2}}>
+                    <Box sx={{ mb: 2 }}>
                       <div>
                         {index === 2 ? (
                           <Button
                             variant="contained"
                             type="submit"
-                            sx={{mt: 1, mr: 1}}
+                            sx={{ mt: 1, mr: 1 }}
                             endIcon={
                               sending.value ? (
                                 <CircularProgress
@@ -370,7 +368,7 @@ export const Submission = observer(() => {
                           <Button
                             variant="contained"
                             onClick={handleNext}
-                            sx={{mt: 1, mr: 1}}
+                            sx={{ mt: 1, mr: 1 }}
                           >
                             Continue
                           </Button>
@@ -378,11 +376,15 @@ export const Submission = observer(() => {
                         <Button
                           disabled={index === 0}
                           onClick={handleBack}
-                          sx={{mt: 1, mr: 1}}
+                          sx={{ mt: 1, mr: 1 }}
                         >
                           Back
                         </Button>
                       </div>
+                      <Typography variant="caption" color="gray">
+                        Your data will be aggregated and shared anonymously.<br />
+                        As a demo, please do not submit any real data just yet.
+                      </Typography>
                     </Box>
                   </StepContent>
                 </Step>
@@ -391,7 +393,7 @@ export const Submission = observer(() => {
           </Stack>
         </Container>
       </Background>
-      <Footer/>
+      <Footer />
       <Snack
         open={!!sendError.value}
         message={sendError.value}
