@@ -18,7 +18,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { normalize } from "@app/helpers";
 import { Stage } from "@app/proto/api";
-import { difference, max, union } from "lodash";
+import { difference, max, sum, union } from "lodash";
 import styled from "styled-components";
 import { cleanScrollBarWithWhiteBorder } from "@app/styles";
 import { CHARACTERISTICS, companyLogo, CompanyStatsResponse, getCompanyStatsByName } from "@app/CompanyApi";
@@ -26,7 +26,7 @@ import { CHARACTERISTICS, companyLogo, CompanyStatsResponse, getCompanyStatsByNa
 const Stages = Object
   .keys(Stage)
   .filter(value => isNaN(Number(value)))
-  .slice(1)
+  // .slice(1)
   .slice(0, -1);
 
 export function Company() {
@@ -54,6 +54,7 @@ export function Company() {
             value: charData[key]
           })) ?? [];
           const maxValue = max(data.map(it => it.value))!;
+          const total = sum(data.map(it => it.value))!;
           return (
             <Stack direction={"row"} spacing={1}>
               <Stack pt={4.5} spacing={2}>
@@ -76,7 +77,7 @@ export function Company() {
                 <Typography fontWeight={700}>{normalize(char)}</Typography>
                 <Stack spacing={2}>
                   {data.map(it => (
-                    <Tooltip title={it.value}>
+                    <Tooltip title={`${Math.round(it.value / total * 100 * 100) / 100}%`}>
                       <Box
                         width={it.value / maxValue * 180}
                         height={21}
